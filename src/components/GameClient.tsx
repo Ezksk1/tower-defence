@@ -83,20 +83,22 @@ export default function GameClient() {
         if(prev.currentLevel === 5 && customPathPoints.length > 1){
             currentPath = rasterizePath(customPathPoints);
         } else {
-            currentPath = LEVELS[prev.currentLevel - 1].path;
+            const levelIndex = prev.currentLevel - 1;
+            if (LEVELS[levelIndex]) {
+                currentPath = LEVELS[levelIndex].path;
+            }
         }
 
         const newEnemies = enemiesForThisSpawn.map((enemyId, index) => {
             const enemyData = ENEMIES[enemyId];
             if (!enemyData) return null;
-            const path = currentPath;
-            if (!path || path.length === 0) return null;
+            if (!currentPath || currentPath.length === 0) return null;
             const totalHp = enemyData.hp(prev.wave);
             return {
                 ...enemyData,
                 idInGame: `${prev.wave}-${Date.now()}-${index}`,
-                x: path[0].x * GAME_CONFIG.CELL_WIDTH + GAME_CONFIG.CELL_WIDTH/2 - (index * 25), // Offset spawn for tighter groups
-                y: path[0].y * GAME_CONFIG.CELL_HEIGHT + GAME_CONFIG.CELL_HEIGHT/2,
+                x: currentPath[0].x * GAME_CONFIG.CELL_WIDTH + GAME_CONFIG.CELL_WIDTH/2 - (index * 25), // Offset spawn for tighter groups
+                y: currentPath[0].y * GAME_CONFIG.CELL_HEIGHT + GAME_CONFIG.CELL_HEIGHT/2,
                 currentHp: totalHp,
                 totalHp: totalHp,
                 pathIndex: 0,
@@ -140,7 +142,7 @@ export default function GameClient() {
           waveTimer: 0,
       };
     });
-  }, [gameState.waveActive, spawnGroup, gameState.gameSpeed, gameState.currentLevel, customPathPoints]);
+  }, [gameState.waveActive, spawnGroup, gameState.gameSpeed, gameState.currentLevel, customPathPoints, toast]);
 
   useGameLoop(gameState, setGameState, handleStartWave, customPathPoints);
 
@@ -157,9 +159,12 @@ export default function GameClient() {
     if(gameState.currentLevel === 5 && customPathPoints.length > 1){
         currentPath = rasterizePath(customPathPoints);
     } else {
-        currentPath = LEVELS[gameState.currentLevel - 1].path;
+        const levelIndex = gameState.currentLevel - 1;
+        if (LEVELS[levelIndex]) {
+            currentPath = LEVELS[levelIndex].path;
+        }
     }
-    const isOnPath = currentPath.some(p => p.x === gridX && p.y === gridY);
+    const isOnPath = currentPath && currentPath.some(p => p.x === gridX && p.y === gridY);
     const isOccupied = gameState.towers.some(t => t.gridX === gridX && t.gridY === gridY);
     
     if (isOnPath || isOccupied) {
@@ -312,14 +317,17 @@ export default function GameClient() {
       setCustomPathPoints([]);
       toast({ title: 'Draw Your Path!', description: "Click and drag on the map to create a path for the enemies."});
     } else {
-      newPath = LEVELS[newLevel - 1].path;
+      const levelIndex = newLevel - 1;
+      if(LEVELS[levelIndex]) {
+        newPath = LEVELS[levelIndex].path;
+      }
     }
     setGameState({
         ...initialGameState,
         currentLevel: newLevel,
-        decorations: generateDecorations(30, newPath),
+        decorations: generateDecorations(30, newPath || []),
     });
-    const levelName = newLevel === 5 ? "DIY Map" : LEVELS[newLevel - 1].name;
+    const levelName = newLevel === 5 ? "DIY Map" : (LEVELS[newLevel-1] ? LEVELS[newLevel - 1].name : "Unknown Map");
     toast({ title: `Game Restarted on ${levelName}!`});
   };
 
@@ -365,3 +373,5 @@ export default function GameClient() {
     </div>
   );
 }
+
+    

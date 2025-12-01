@@ -529,7 +529,10 @@ export default function GameBoard({
     if(gameState.currentLevel === 5 && customPathPoints.length > 1){
         path = rasterizePath(customPathPoints);
     } else {
-        path = LEVELS[gameState.currentLevel - 1].path;
+        const levelIndex = gameState.currentLevel - 1;
+        if (LEVELS[levelIndex]) {
+            path = LEVELS[levelIndex].path;
+        }
     }
 
     if (!path || path.length === 0) return;
