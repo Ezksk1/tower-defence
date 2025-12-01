@@ -236,7 +236,7 @@ function drawChristmasHat(ctx: CanvasRenderingContext2D, x: number, y: number, s
     ctx.restore();
 }
 
-function drawRealisticEnemy(ctx: CanvasRenderingContext2D, e: ActiveEnemy) {
+export function drawRealisticEnemy(ctx: CanvasRenderingContext2D, e: ActiveEnemy) {
     const x = e.x;
     const y = e.y;
     const scale = 1.2; // 20% bigger

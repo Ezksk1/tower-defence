@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import type { GameState } from "@/lib/types";
-import { FolderDown, Pause, Play, Save } from "lucide-react";
+import { FolderDown, Pause, Play, RefreshCw, ChevronsRight, Save } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -14,6 +14,8 @@ interface GameControlsProps {
   onPause: () => void;
   onSave: () => void;
   onLoad: () => void;
+  onRestart: () => void;
+  onSpeedUp: () => void;
   gameState: GameState;
 }
 
@@ -21,6 +23,8 @@ export default function GameControls({
   onPause,
   onSave,
   onLoad,
+  onRestart,
+  onSpeedUp,
   gameState,
 }: GameControlsProps) {
   return (
@@ -37,6 +41,27 @@ export default function GameControls({
           </TooltipTrigger>
           <TooltipContent>
             <p>{gameState.status === "paused" ? "Resume" : "Pause"} Game</p>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button onClick={onSpeedUp} variant="outline" size="icon" className="relative">
+                <ChevronsRight />
+                <span className="absolute bottom-1 right-1 text-xs font-bold">{gameState.gameSpeed}x</span>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Speed Up ({gameState.gameSpeed}x)</p>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button onClick={onRestart} variant="destructive" size="icon">
+              <RefreshCw />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Restart Game</p>
           </TooltipContent>
         </Tooltip>
         <Tooltip>

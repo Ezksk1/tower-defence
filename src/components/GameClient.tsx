@@ -56,6 +56,7 @@ const initialGameState: GameState = {
   decorations: generateDecorations(30, LEVELS[0].path),
   soldiers: [],
   waveActive: false,
+  gameSpeed: 1,
 };
 
 export default function GameClient() {
@@ -111,7 +112,7 @@ export default function GameClient() {
       enemiesToSpawnRef.current = [...waveConfig];
 
       if(spawnIntervalRef.current) clearInterval(spawnIntervalRef.current);
-      spawnIntervalRef.current = setInterval(spawnGroup, 1500); // Spawn a group every 1.5 seconds
+      spawnIntervalRef.current = setInterval(spawnGroup, 1500 / prev.gameSpeed); // Spawn a group every 1.5 seconds
 
       return {
           ...prev,
@@ -119,7 +120,7 @@ export default function GameClient() {
           waveTimer: 0,
       };
     });
-  }, [gameState.waveActive, spawnGroup]);
+  }, [gameState.waveActive, spawnGroup, gameState.gameSpeed]);
 
   useGameLoop(gameState, setGameState, handleStartWave);
 
@@ -229,6 +230,27 @@ export default function GameClient() {
           toast({ variant: "destructive", title: 'Load Failed', description: 'Could not load game state.' });
       }
   };
+  
+  const handleRestart = () => {
+    if (spawnIntervalRef.current) clearInterval(spawnIntervalRef.current);
+    enemiesToSpawnRef.current = [];
+    setGameState({
+        ...initialGameState,
+        decorations: gameState.decorations, // Keep the same decorations
+    });
+    toast({ title: 'Game Restarted!'});
+  };
+
+  const handleSpeedUp = () => {
+      setGameState(prev => {
+          let newSpeed;
+          if (prev.gameSpeed === 1) newSpeed = 2;
+          else if (prev.gameSpeed === 2) newSpeed = 4;
+          else newSpeed = 1;
+          toast({ title: `Game speed set to ${newSpeed}x` });
+          return {...prev, gameSpeed: newSpeed};
+      });
+  };
 
   return (
     <div id="game-container">
@@ -246,6 +268,8 @@ export default function GameClient() {
         onPause={handlePause}
         onSave={handleSave}
         onLoad={handleLoad}
+        onRestart={handleRestart}
+        onSpeedUp={handleSpeedUp}
       />
     </div>
   );

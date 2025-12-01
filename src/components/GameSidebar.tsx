@@ -2,13 +2,21 @@
 
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { TOWERS } from "@/lib/game-config";
-import type { GameState, TowerData, PlacedTower } from "@/lib/types";
+import { ENEMIES, TOWERS } from "@/lib/game-config";
+import type { GameState, TowerData, PlacedTower, EnemyData } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { drawRealisticTower } from "@/components/GameBoard";
+import { drawRealisticTower, drawRealisticEnemy } from "@/components/GameBoard";
 import GameControls from "./GameControls";
 import { Button } from "./ui/button";
-import { X } from "lucide-react";
+import { ShieldQuestion, X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "./ui/scroll-area";
 
 interface GameSidebarProps {
   gameState: GameState;
@@ -17,7 +25,77 @@ interface GameSidebarProps {
   onPause: () => void;
   onSave: () => void;
   onLoad: () => void;
+  onRestart: () => void;
+  onSpeedUp: () => void;
 }
+
+const EnemyPreview = ({ enemy }: { enemy: EnemyData }) => {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas || !enemy) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const previewSize = 80;
+        canvas.width = previewSize;
+        canvas.height = previewSize;
+
+        ctx.clearRect(0, 0, previewSize, previewSize);
+
+        const activeEnemy = {
+            ...enemy,
+            idInGame: 'preview',
+            x: previewSize / 2,
+            y: previewSize / 2,
+            currentHp: enemy.baseHp,
+            totalHp: enemy.baseHp,
+            pathIndex: 0,
+            active: true,
+            speedFactor: 1,
+            frozenTimer: 0,
+            poisonTimer: 0,
+            poisonDamage: 0,
+        };
+        
+        drawRealisticEnemy(ctx, activeEnemy);
+
+    }, [enemy]);
+
+    return <canvas ref={canvasRef} />;
+}
+
+const EnemyBestiary = () => {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="w-full">
+            <ShieldQuestion className="mr-2 h-4 w-4" />
+            Enemy Info
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-4xl">
+        <DialogHeader>
+          <DialogTitle>Enemy Bestiary</DialogTitle>
+        </DialogHeader>
+        <ScrollArea className="h-[60vh] pr-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {Object.values(ENEMIES).map(enemy => (
+                <div key={enemy.id} className="flex flex-col items-center p-2 rounded-lg bg-card">
+                    <EnemyPreview enemy={enemy} />
+                    <h3 className="font-bold">{enemy.name}</h3>
+                    <p className="text-sm text-muted-foreground">HP: {enemy.baseHp} (scales)</p>
+                    <p className="text-sm text-muted-foreground">Speed: {enemy.speed}</p>
+                    {enemy.flying && <p className="text-sm text-blue-400">Flying</p>}
+                </div>
+            ))}
+            </div>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 
 const TowerPreview = ({ tower }: { tower: TowerData }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -67,7 +145,7 @@ const TowerPreview = ({ tower }: { tower: TowerData }) => {
 }
 
 
-export default function GameSidebar({ gameState, onDragStart, onStartWave, onPause, onSave, onLoad }: GameSidebarProps) {
+export default function GameSidebar({ gameState, onDragStart, onStartWave, onPause, onSave, onLoad, onRestart, onSpeedUp }: GameSidebarProps) {
   const [selectedTower, setSelectedTower] = useState<TowerData | null>(null);
 
   const handleTowerClick = (tower: TowerData) => {
@@ -140,7 +218,11 @@ export default function GameSidebar({ gameState, onDragStart, onStartWave, onPau
       </div>
       
       <div className="mt-auto flex flex-col gap-2">
-        <GameControls onPause={onPause} onSave={onSave} onLoad={onLoad} gameState={gameState} />
+        <GameControls onPause={onPause} onSave={onSave} onLoad={onLoad} onRestart={onRestart} onSpeedUp={onSpeedUp} gameState={gameState} />
+
+        <div className="flex gap-2">
+            <EnemyBestiary />
+        </div>
 
         <div id="stats">
           <div className="stat">Lives: <span id="lives">{gameState.lives}</span></div>

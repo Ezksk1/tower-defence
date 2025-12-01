@@ -167,4 +167,5 @@ export type GameState = {
   decorations: Decoration[];
   soldiers: Soldier[];
   waveActive: boolean;
+  gameSpeed: number;
 };

@@ -33,7 +33,6 @@ export function useGameLoop(
 ) {
   const lastFrameTimeRef = useRef<number>(0);
   const gameTimeRef = useRef<number>(0);
-  const spawnTimerRef = useRef<number>(0);
 
   const gameLoop = useCallback((timestamp: number) => {
     if (lastFrameTimeRef.current === 0) {
@@ -48,12 +47,17 @@ export function useGameLoop(
       return;
     }
     
+    // Apply game speed to delta time
+    deltaTime *= gameState.gameSpeed;
+
     gameTimeRef.current += deltaTime;
     
     while (gameTimeRef.current >= FRAME_TIME) {
         setGameState(prev => {
-            if (prev.lives <= 0) {
-              return {...prev, status: 'game-over'};
+            // If the speed changed, prev might be stale, use the latest from gameState
+            const currentSpeed = gameState.gameSpeed;
+            if (prev.status !== 'playing' || prev.lives <= 0) {
+              return prev.lives <= 0 ? {...prev, status: 'game-over'} : prev;
             }
 
             let newLives = prev.lives;
@@ -90,11 +94,13 @@ export function useGameLoop(
                 const dy = targetY - newEnemy.y;
                 const distance = Math.hypot(dx, dy);
                 
-                if (distance < newEnemy.speed * newEnemy.speedFactor) {
+                const currentMoveSpeed = newEnemy.speed * newEnemy.speedFactor;
+
+                if (distance < currentMoveSpeed) {
                     newEnemy.pathIndex++;
                 } else {
-                    const moveX = (dx / distance) * newEnemy.speed * newEnemy.speedFactor;
-                    const moveY = (dy / distance) * newEnemy.speed * newEnemy.speedFactor;
+                    const moveX = (dx / distance) * currentMoveSpeed;
+                    const moveY = (dy / distance) * currentMoveSpeed;
                     newEnemy.x += moveX;
                     newEnemy.y += moveY;
                 }
@@ -166,8 +172,9 @@ export function useGameLoop(
                 const dx = pTarget.x - p.x;
                 const dy = pTarget.y - p.y;
                 const dist = Math.hypot(dx, dy);
+                const currentProjectileSpeed = p.speed;
 
-                if (dist < p.speed) {
+                if (dist < currentProjectileSpeed) {
                     p.active = false; // Deactivate projectile on hit
 
                     const applyDamage = (enemyId: string, damage: number) => {
@@ -195,8 +202,8 @@ export function useGameLoop(
                     }
                 } else {
                     // Move projectile
-                    p.x += (dx / dist) * p.speed;
-                    p.y += (dy / dist) * p.speed;
+                    p.x += (dx / dist) * currentProjectileSpeed;
+                    p.y += (dy / dist) * currentProjectileSpeed;
                 }
             });
 
@@ -212,10 +219,11 @@ export function useGameLoop(
             // 4. Wave Management
             let newWave = prev.wave;
             let newWaveActive = prev.waveActive;
-            if (prev.waveActive && finalEnemies.length === 0 && updatedEnemies.length > 0) {
+            if (prev.waveActive && finalEnemies.length === 0 && updatedEnemies.length === 0 && enemiesToSpawnRef.current.length === 0) {
+                 // Check if there are no more enemies on screen and no more to spawn
                 newWaveActive = false;
                 newWave++;
-                newMoney += 100; // End of wave bonus
+                newMoney += 100 + (prev.wave * 10); // End of wave bonus
             }
 
             // Return new state
@@ -230,6 +238,7 @@ export function useGameLoop(
                 projectiles: remainingProjectiles.filter(p => p.active),
                 soldiers: newSoldiers,
                 waveTimer: prev.waveActive ? 0 : prev.waveTimer,
+                gameSpeed: currentSpeed, // ensure speed is passed through
             };
         });
         
@@ -237,13 +246,15 @@ export function useGameLoop(
     }
     
     requestAnimationFrame(gameLoop);
-  }, [gameState.status, setGameState]);
+  }, [gameState.status, gameState.gameSpeed, setGameState, handleStartWave]);
 
   // Second-based timer for waves
   useEffect(() => {
+    if (gameState.status !== 'playing') return;
+    
     const timerId = setInterval(() => {
       setGameState(prev => {
-        if (!prev.waveActive && prev.lives > 0) {
+        if (!prev.waveActive && prev.lives > 0 && prev.status === 'playing') {
           if (prev.waveTimer <= 1) {
             handleStartWave();
             return { ...prev, waveTimer: GAME_CONFIG.WAVE_TIMER_DURATION };
@@ -252,9 +263,14 @@ export function useGameLoop(
         }
         return prev;
       });
-    }, 1000);
+    }, 1000 / gameState.gameSpeed); // Timer respects game speed
+
     return () => clearInterval(timerId);
-  }, [handleStartWave, setGameState]);
+  }, [handleStartWave, setGameState, gameState.gameSpeed, gameState.status]);
+
+  useEffect(() => {
+    lastFrameTimeRef.current = 0; // Reset last frame time on speed change to prevent jumps
+  }, [gameState.gameSpeed]);
 
   useEffect(() => {
     const animationFrameId = requestAnimationFrame(gameLoop);
