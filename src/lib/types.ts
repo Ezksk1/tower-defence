@@ -64,9 +64,9 @@ export interface TowerData {
   color?: string;
 }
 
-export type DIYChassisId = 'light' | 'medium' | 'heavy';
-export type DIYWeaponId = 'gun' | 'cannon' | 'laser';
-export type DIYAccessoryId = 'scope' | 'aoe' | 'frost';
+export type DIYChassisId = 'light' | 'medium' | 'heavy' | 'stealth' | 'armored';
+export type DIYWeaponId = 'gun' | 'cannon' | 'laser' | 'rocket' | 'flamethrower' | 'tesla';
+export type DIYAccessoryId = 'none' | 'scope' | 'aoe' | 'frost' | 'autoloader' | 'piercing' | 'poison' | 'rangefinder';
 
 export interface DIYChassis {
   id: DIYChassisId;
@@ -83,6 +83,8 @@ export interface DIYWeapon {
   range: number;
   rate: number;
   splash?: number;
+  burn?: number;
+  chain?: number;
   color: string;
   iconUrl: string;
   iconHint: string;
@@ -97,6 +99,9 @@ export interface DIYAccessory {
   rangeMultiplier?: number;
   rateMultiplier?: number;
   splashBonus?: number;
+  slow?: number;
+  pierce?: number;
+  poison?: number;
 }
 
 

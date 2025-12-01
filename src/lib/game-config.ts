@@ -32,16 +32,26 @@ export const DIY_COMPONENTS: {
     { id: 'light', name: 'Light Chassis', cost: 25, color: '#B0BEC5' },
     { id: 'medium', name: 'Medium Chassis', cost: 50, color: '#78909C' },
     { id: 'heavy', name: 'Heavy Chassis', cost: 100, color: '#455A64' },
+    { id: 'stealth', name: 'Stealth Chassis', cost: 150, color: '#212121' },
+    { id: 'armored', name: 'Armored Chassis', cost: 200, color: '#BF360C' },
   ],
   weapons: [
     { id: 'gun', name: 'Machine Gun', cost: 50, damage: 10, range: 120, rate: 20, color: '#FFC107', ...getTowerIcon('rapid_fire_icon') },
     { id: 'cannon', name: 'Cannon', cost: 100, damage: 50, range: 150, rate: 80, splash: 30, color: '#F44336', ...getTowerIcon('bomber_icon') },
     { id: 'laser', name: 'Laser Beam', cost: 150, damage: 8, range: 180, rate: 5, color: '#03A9F4', ...getTowerIcon('laser_icon') },
+    { id: 'rocket', name: 'Rocket Launcher', cost: 200, damage: 80, range: 200, rate: 100, splash: 50, color: '#FF5722', ...getTowerIcon('rocket_icon') },
+    { id: 'flamethrower', name: 'Flamethrower', cost: 120, damage: 5, range: 80, rate: 10, burn: 2, color: '#FF9800', ...getTowerIcon('flame_icon') },
+    { id: 'tesla', name: 'Tesla Coil', cost: 250, damage: 20, range: 140, rate: 60, chain: 3, color: '#3F51B5', ...getTowerIcon('tesla_icon') },
   ],
   accessories: [
+    { id: 'none', name: 'None', description: 'No accessory.', cost: 0 },
     { id: 'scope', name: 'Scope', description: '+25% Range', cost: 50, rangeMultiplier: 1.25 },
     { id: 'aoe', name: 'Explosive Rounds', description: '+20 Splash Radius', cost: 75, splashBonus: 20 },
-    { id: 'frost', name: 'Cryo Ammo', description: 'Slows enemies on hit', cost: 100, rateMultiplier: 1.2 }, // Represent slow via rate
+    { id: 'frost', name: 'Cryo Ammo', description: 'Slows enemies on hit', cost: 100, slow: 0.5 },
+    { id: 'autoloader', name: 'Auto-Loader', description: '-50% Fire Rate Cooldown', cost: 150, rateMultiplier: 0.5 },
+    { id: 'piercing', name: 'Piercing Rounds', description: 'Projectiles pierce 3 enemies', cost: 200, pierce: 3 },
+    { id: 'poison', name: 'Poison Coating', description: 'Adds damage over time', cost: 125, poison: 5 },
+    { id: 'rangefinder', name: 'Advanced Rangefinder', description: '+50% Range', cost: 250, rangeMultiplier: 1.5 },
   ]
 };
 

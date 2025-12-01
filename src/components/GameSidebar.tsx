@@ -187,6 +187,11 @@ const DIYTowerBuilder = ({ onSave }: { onSave: (tower: DIYTower) => void }) => {
       range,
       rate,
       splash: splash > 0 ? splash : undefined,
+      burn: weapon.burn,
+      chain: weapon.chain,
+      slow: accessory.slow,
+      pierce: accessory.pierce,
+      poison: accessory.poison,
       isCustom: true,
       chassis: chassis.id,
       weapon: weapon.id,
@@ -266,7 +271,12 @@ const DIYTowerBuilder = ({ onSave }: { onSave: (tower: DIYTower) => void }) => {
                 <span>Damage: <span className="font-bold">{finalTower.damage}</span></span>
                 <span>Range: <span className="font-bold">{finalTower.range}</span></span>
                 <span>Fire Rate: <span className="font-bold">{finalTower.rate}</span></span>
-                {finalTower.splash && <span>Splash: <span className="font-bold">{finalTower.splash}</span></span>}
+                {finalTower.splash ? <span>Splash: <span className="font-bold">{finalTower.splash}</span></span> : null}
+                {finalTower.burn ? <span>Burn: <span className="font-bold">{finalTower.burn}</span></span> : null}
+                {finalTower.chain ? <span>Chain: <span className="font-bold">{finalTower.chain}</span></span> : null}
+                {finalTower.slow ? <span>Slow: <span className="font-bold">{finalTower.slow}</span></span> : null}
+                {finalTower.pierce ? <span>Pierce: <span className="font-bold">{finalTower.pierce}</span></span> : null}
+                {finalTower.poison ? <span>Poison: <span className="font-bold">{finalTower.poison}</span></span> : null}
              </div>
              <p className="text-xs text-muted-foreground mt-2 text-center">{accessory.description}</p>
           </div>
