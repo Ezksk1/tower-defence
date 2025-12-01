@@ -18,7 +18,7 @@ export default function GameSidebar({ gameState, onDragStart, onStartWave }: Gam
       <p className="instruction">Drag towers to the battlefield</p>
       
       <div id="tower-list">
-        {Object.values(TOWERS).map((tower) => {
+        {Object.values(TOWERS).filter(tower => tower && tower.id).map((tower) => {
           const canAfford = gameState.money >= tower.cost;
           return (
             <div
