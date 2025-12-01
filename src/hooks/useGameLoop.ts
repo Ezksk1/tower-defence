@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import type { GameState } from "@/lib/types";
-import { LEVELS } from "@/lib/game-config";
+import { ENEMIES, LEVELS } from "@/lib/game-config";
 
 const FRAME_TIME = 1000 / 60; // 60 FPS
 
@@ -77,6 +77,7 @@ export function useGameLoop(
                 });
 
                 if(target) {
+                    const enemyConfig = ENEMIES[target.id];
                     target.currentHp -= tower.damage;
                     return { ...tower, cooldown: tower.rate };
                 }
@@ -86,7 +87,8 @@ export function useGameLoop(
 
             const survivingEnemies = updatedEnemies.filter(enemy => {
                 if(enemy.currentHp <= 0) {
-                    newMoney += Math.floor(enemy.baseHp / 10);
+                    const enemyConfig = ENEMIES[enemy.id];
+                    newMoney += Math.floor(enemyConfig.baseHp / 10);
                     return false;
                 }
                 return true;

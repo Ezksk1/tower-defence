@@ -38,12 +38,14 @@ export default function GameClient() {
       const waveEnemies = (ENEMIES_BY_WAVE[prev.wave] || []).map((enemyId, index) => {
           const enemyData = ENEMIES[enemyId];
           const path = LEVELS[prev.currentLevel - 1].path;
+          const totalHp = enemyData.hp(prev.wave);
           return {
               ...enemyData,
               idInGame: `${prev.wave}-${index}`,
               x: path[0].x - (index * 40), // Stagger spawn
               y: path[0].y,
-              currentHp: enemyData.hp(prev.wave),
+              currentHp: totalHp,
+              totalHp: totalHp,
               pathIndex: 0,
           };
       });

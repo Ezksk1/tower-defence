@@ -64,13 +64,13 @@ export default function GameBoard({ gameState, onDrop }: GameBoardProps) {
       ctx.fill();
 
       // Health bar
-      const healthPercentage = enemy.currentHp / enemy.hp(gameState.wave);
+      const healthPercentage = enemy.currentHp / enemy.totalHp;
       ctx.fillStyle = '#76FF03';
       ctx.fillRect(enemy.x - 15, enemy.y - 20, 30 * healthPercentage, 5);
       ctx.strokeStyle = '#263238';
       ctx.strokeRect(enemy.x - 15, enemy.y - 20, 30, 5);
     });
-  }, [gameState.enemies, gameState.wave]);
+  }, [gameState.enemies]);
 
   const drawDecorations = useCallback((ctx: CanvasRenderingContext2D) => {
     // Simple placeholder for decorations

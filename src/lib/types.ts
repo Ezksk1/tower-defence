@@ -53,6 +53,7 @@ export interface ActiveEnemy extends EnemyData {
   x: number;
   y: number;
   currentHp: number;
+  totalHp: number;
   pathIndex: number;
 }
 
