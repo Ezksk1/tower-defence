@@ -1,24 +1,58 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import type { GameState, PlacedTower, TowerData, ActiveEnemy, Soldier } from "@/lib/types";
+import type { GameState, PlacedTower, TowerData, ActiveEnemy, Soldier, Decoration } from "@/lib/types";
 import { GAME_CONFIG, LEVELS, TOWERS, ENEMIES_BY_WAVE, ENEMIES } from "@/lib/game-config";
 import GameBoard from "./GameBoard";
 import GameSidebar from "./GameSidebar";
 import { useGameLoop } from "@/hooks/useGameLoop";
 import { useToast } from "@/hooks/use-toast";
 
+const generateDecorations = (count: number, path: {x:number, y:number}[]): Decoration[] => {
+    const decorations: Decoration[] = [];
+    const pathSet = new Set(path.map(p => `${p.x},${p.y}`));
+
+    for(let i=0; i<count; i++){
+        let x, y, gridX, gridY;
+        let valid = false;
+        let attempts = 0;
+        while(!valid && attempts < 50){
+            gridX = Math.floor(Math.random() * GAME_CONFIG.GRID_COLS);
+            gridY = Math.floor(Math.random() * GAME_CONFIG.GRID_ROWS);
+            if(!pathSet.has(`${gridX},${gridY}`)){
+                valid = true;
+            }
+            attempts++;
+        }
+        
+        if(valid){
+            x = gridX * GAME_CONFIG.CELL_WIDTH + Math.random() * GAME_CONFIG.CELL_WIDTH;
+            y = gridY * GAME_CONFIG.CELL_HEIGHT + Math.random() * GAME_CONFIG.CELL_HEIGHT;
+            const type = (['tree', 'cane', 'ornament'] as const)[Math.floor(Math.random()*3)];
+            decorations.push({
+                type,
+                x,
+                y,
+                size: Math.random() * 20 + 20,
+                color: ['#D32F2F', '#FFC107', '#009688', '#2196F3'][Math.floor(Math.random()*4)],
+                rotation: Math.random() * Math.PI * 2,
+            });
+        }
+    }
+    return decorations;
+}
+
 const initialGameState: GameState = {
   status: "playing",
   lives: GAME_CONFIG.STARTING_LIVES,
   money: GAME_CONFIG.STARTING_MONEY,
   wave: 1,
-  currentLevel: 2, // Use the new complex path
+  currentLevel: 1,
   waveTimer: GAME_CONFIG.WAVE_TIMER_DURATION,
   towers: [],
   enemies: [],
   projectiles: [],
-  decorations: [],
+  decorations: generateDecorations(30, LEVELS[0].path),
   soldiers: [],
   waveActive: false,
 };

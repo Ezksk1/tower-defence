@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect, useCallback } from "react";
-import type { GameState, PlacedTower, ActiveEnemy } from "@/lib/types";
+import type { GameState, PlacedTower, ActiveEnemy, Decoration } from "@/lib/types";
 import { GAME_CONFIG, LEVELS } from "@/lib/game-config";
 import { useToast } from "@/hooks/use-toast";
 
@@ -314,6 +314,53 @@ export default function GameBoard({ gameState, onDrop, onDragOver, onDragLeave, 
     ctx.fillRect(0, GAME_CONFIG.GRID_HEIGHT * 0.85, GAME_CONFIG.GRID_WIDTH, GAME_CONFIG.GRID_HEIGHT * 0.15);
   }, []);
 
+  const drawDecorations = useCallback((ctx: CanvasRenderingContext2D) => {
+    gameState.decorations.forEach(d => {
+        ctx.save();
+        ctx.translate(d.x, d.y);
+        ctx.rotate(d.rotation || 0);
+        const size = d.size || 30;
+
+        if (d.type === 'tree') {
+            ctx.fillStyle = '#654321';
+            ctx.fillRect(-size * 0.1, 0, size * 0.2, size * 0.3);
+            ctx.fillStyle = '#2E7D32';
+            for (let i = 0; i < 3; i++) {
+                ctx.beginPath();
+                ctx.moveTo(0, -size * (0.7 - i * 0.2));
+                ctx.lineTo(-size * (0.5 - i * 0.1), 0 - i * size * 0.15);
+                ctx.lineTo(size * (0.5 - i * 0.1), 0 - i * size * 0.15);
+                ctx.closePath();
+                ctx.fill();
+            }
+        } else if (d.type === 'cane') {
+            ctx.lineWidth = size * 0.15;
+            for(let i=0; i < 6; i++){
+                ctx.strokeStyle = i % 2 === 0 ? '#FFFFFF' : '#D32F2F';
+                ctx.beginPath();
+                ctx.arc(0, -size*0.2, size*0.2, Math.PI + (i/6)*Math.PI, Math.PI + ((i+1)/6)*Math.PI);
+                ctx.stroke();
+            }
+            ctx.beginPath();
+            ctx.moveTo(size*0.2, -size*0.2);
+            ctx.lineTo(size*0.2, size*0.3);
+            ctx.stroke();
+        } else if (d.type === 'ornament') {
+            ctx.fillStyle = d.color || '#D32F2F';
+            ctx.beginPath();
+            ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            ctx.beginPath();
+            ctx.arc(-size*0.15, -size*0.15, size / 4, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        ctx.restore();
+    });
+}, [gameState.decorations]);
+
+
   const drawPath = useCallback((ctx: CanvasRenderingContext2D) => {
     const path = LEVELS[gameState.currentLevel - 1].path;
     if (!path || path.length === 0) return;
@@ -381,6 +428,7 @@ export default function GameBoard({ gameState, onDrop, onDragOver, onDragLeave, 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
     drawBackground(ctx);
+    drawDecorations(ctx);
     drawPath(ctx);
     drawTowers(ctx);
     drawEnemies(ctx);
@@ -389,7 +437,7 @@ export default function GameBoard({ gameState, onDrop, onDragOver, onDragLeave, 
     if (gameState.status === 'paused') {
       drawPausedOverlay(ctx);
     }
-  }, [gameState, drawBackground, drawPath, drawTowers, drawEnemies, drawProjectiles, drawPausedOverlay, canvasRef]);
+  }, [gameState, drawBackground, drawPath, drawTowers, drawEnemies, drawProjectiles, drawPausedOverlay, canvasRef, drawDecorations]);
   
   return (
       <canvas
