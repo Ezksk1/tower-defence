@@ -99,19 +99,19 @@
     {
       "id": "javelin_icon",
       "description": "Icon for Javelin Team",
-      "imageUrl": "https://images.unsplash.com/photo-1727896908559-9b760d5e82cb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtaXNzaWxlJTIwbGF1bmNoZXJ8ZW58MHx8fHwxNzY0NTU4MDU2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1727896908559-9b760d5e82cb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtaXNzaWxlJTIwbGF1bmNoZXJ8ZW58MHx8fHwxNzY0NTU4MDU2fDA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "missile launcher"
     },
     {
       "id": "m109_paladin_icon",
       "description": "Icon for M109 Paladin",
-      "imageUrl": "https://images.unsplash.com/photo-1730208569941-8fc1734bdb4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxhcnRpbGxlcnklMjB0YW5rfGVufDB8fHx8MTc2NDU1ODA1Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1730208569941-8fc1734bdb4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxhcnRpbGxlcnklMjB0YW5rfGVufDB8fHx8MTc2NDU1ODA1Nnww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "artillery tank"
     },
     {
       "id": "himars_icon",
       "description": "Icon for HIMARS",
-      "imageUrl": "https://images.unsplash.com/photo-1727896908560-41f75dad9d96?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxyb2NrZXQlMjB0cnVja3xlbnwwfHx8fDE3NjQ1NTgwNTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1727896908560-41f75dad9d96?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxyb2NrZXQlMjB0cnVja3xlbnwwfHx8fDE3NjQ1NTgwNTZ8MA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "rocket truck"
     },
     {
@@ -123,25 +123,25 @@
     {
       "id": "missile_silo_icon",
       "description": "Icon for Missile Silo",
-      "imageUrl": "https://images.unsplash.com/photo-1710058827353-54cda49030e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxzaWxvJTIwcm9ja2V0fGVufDB8fHx8MTc2NDU1ODA1Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1710058827353-54cda49030e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxzaWxvJTIwcm9ja2V0fGVufDB8fHx8MTc2NDU1ODA1Nnww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "silo rocket"
     },
     {
       "id": "a10_warthog_icon",
       "description": "Icon for A-10 Strike",
-      "imageUrl": "https://images.unsplash.com/photo-1658093608781-4e3386156092?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxhdHRhY2slMjBwbGFuZXxlbnwwfHx8fDE3NjQ1NTgwNTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1658093608781-4e3386156092?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxhdHRhY2slMjBwbGFuZXxlbnwwfHx8fDE3NjQ1NTgwNTZ8MA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "attack plane"
     },
     {
       "id": "barracks_icon",
       "description": "Icon for Barracks",
-      "imageUrl": "https://images.unsplash.com/photo-1762151533291-52154db5f44a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtaWxpdGFyeSUyMGJ1aWxkaW5nfGVufDB8fHx8MTc2NDU1ODA1Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1762151533291-52154db5f44a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxtaWxpdGFyeSUyMGJ1aWxkaW5nfGVufDB8fHx8MTc2NDU1ODA1Nnww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "military building"
     },
     {
       "id": "commando_icon",
       "description": "Icon for Commando",
-      "imageUrl": "https://images.unsplash.com/photo-1638000470485-a15502c715ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzcGVjaWFsJTIwZm9yY2VzfGVufDB8fHx8MTc2NDU1ODg1N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1638000470485-a15502c715ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzcGVjaWFsJTIwZm9yY2VzfGVufDB8fHx8MTc2NDU1ODg1N3ww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "special forces"
     },
     {
@@ -183,7 +183,7 @@
     {
       "id": "type10_icon",
       "description": "Icon for Type 10",
-      "imageUrl": "https://images.unsplash.com/photo-1755804925900-5f5611be4400?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxqYXBhbmVzZSUyMHRhbmt8ZW58MHx8fHwxNzY0NTU4ODU3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1755804925900-5f5611be4400?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxqYXBhbmVzZSUyMHRhbmt8ZW58MHx8fHwxNzY0NTU4ODU3fDA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "japanese tank"
     },
     {
@@ -195,13 +195,13 @@
     {
       "id": "panda_china_icon",
       "description": "Icon for Panda",
-      "imageUrl": "https://images.unsplash.com/photo-1597953601374-1ff2d5640c85?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxnaWFudCUyMHBhbmRhfGVufDB8fHx8MTc2NDU1ODg1N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1597953601374-1ff2d5640c85?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxnaWFudCUyMHBhbmRhfGVufDB8fHx8MTc2NDU1ODg1N3ww&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "giant panda"
     },
     {
       "id": "bear_russia_icon",
       "description": "Icon for Bear",
-      "imageUrl": "https://images.unsplash.com/photo-1475813664016-f6a7ecaee6bf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxicm93biUyMGJlYXJ8ZW58MHx8fHwxNzY0NDYyNzc0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1475813664016-f6a7ecaee6bf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxicm93biUyMGJlYXJ8ZW58MHx8fHwxNzY0NDYyNzc0fDA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "brown bear"
     },
     {
@@ -213,7 +213,7 @@
     {
       "id": "kangaroo_aus_icon",
       "description": "Icon for Kangaroo",
-      "imageUrl": "https://images.unsplash.com/photo-1674293126753-28afe6ff5075?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxib3hpbmclMjBrYW5nYXJvb3xlbnwwfHx8fDE3NjQ1NTg4NTd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1674293126753-28afe6ff5075?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxib3hpbmclMjBrYW5nYXJvb3xlbnwwfHx8fDE3NjQ1NTg4NTd8MA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "boxing kangaroo"
     },
     {

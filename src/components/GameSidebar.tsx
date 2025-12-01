@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { TOWERS } from "@/lib/game-config";
 import type { GameState, TowerData } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -12,10 +13,28 @@ interface GameSidebarProps {
 }
 
 export default function GameSidebar({ gameState, onDragStart, onStartWave }: GameSidebarProps) {
+  const [selectedTower, setSelectedTower] = useState<TowerData | null>(null);
+
+  const handleTowerClick = (tower: TowerData) => {
+    setSelectedTower(tower);
+  };
+
   return (
     <div id="sidebar">
       <h2>Winter Warfare</h2>
       <p className="instruction">Drag towers to the battlefield</p>
+
+      {selectedTower && (
+        <div id="tower-preview">
+          <Image src={selectedTower.iconUrl} alt={selectedTower.name} width={100} height={100} />
+          <h3>{selectedTower.name}</h3>
+          <p>Cost: ${selectedTower.cost}</p>
+          <p>Damage: {selectedTower.damage}</p>
+          <p>Range: {selectedTower.range}</p>
+          <p>Rate: {selectedTower.rate}</p>
+          {selectedTower.splash && <p>Splash: {selectedTower.splash}</p>}
+        </div>
+      )}
       
       <div id="tower-list">
         {Object.values(TOWERS).filter(tower => tower && tower.id).map((tower) => {
@@ -25,11 +44,14 @@ export default function GameSidebar({ gameState, onDragStart, onStartWave }: Gam
               key={tower.id}
               draggable={canAfford}
               onDragStart={() => onDragStart(tower)}
+              onClick={() => handleTowerClick(tower)}
               className={cn("tower-card", !canAfford && "disabled")}
               title={`${tower.name} - $${tower.cost}`}
               data-type={tower.id}
             >
-              <div className={cn("icon", `${tower.id.replace(/_/g, '-')}-icon`)}></div>
+              <div className={cn("icon", `${tower.id.replace(/_/g, '-')}-icon`)}>
+                 <Image src={tower.iconUrl} alt={tower.name} width={32} height={32} data-ai-hint={tower.iconHint} />
+              </div>
               <div className="info">
                 <span className="name">{tower.name}</span>
                 <span className="cost">${tower.cost}</span>

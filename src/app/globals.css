@@ -171,60 +171,31 @@ h2 {
     position: relative;
 }
 
-.m4-trooper-icon { background: #795548; }
-.m2-browning-icon { background: #212121; }
-.barrett-50-icon { background: #3E2723; }
-.m1-abrams-icon { background: #4CAF50; }
-.apache-icon { background: #607D8B; }
-.patriot-icon { background: #1A237E; }
-.ciws-icon { background: #ECEFF1; }
-.barracks-icon { background: #558B2F; }
-.missile-silo-icon { background: #37474F; }
-.a10-warthog-icon { background: #455A64; }
-.turret-icon { background: #4CAF50; }
-.sniper-icon { background: #2196F3; }
-.blaster-icon { background: #FF9800; }
-.bomber-icon { background: #F44336; }
-.rapid-fire-icon { background: #FFEB3B; }
-.ice-icon { background: #00BCD4; }
-.poison-icon { background: #9C27B0; }
-.laser-icon { background: #E91E63; }
-.tesla-icon { background: #3F51B5; }
-.rocket-icon { background: #607D8B; }
-.ballista-icon { background: #8D6E63; }
-
-
-/* Add little details to icons to make them look like towers */
-.icon::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.3);
+#tower-preview {
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #222;
+  border-radius: 6px;
+  text-align: center;
 }
 
-.m4-trooper-icon::after { width: 4px; height: 12px; background: #000; }
-.m2-browning-icon::after { width: 6px; height: 16px; background: #000; }
-.barrett-50-icon::after { width: 2px; height: 24px; background: #000; }
-.m1-abrams-icon::after { width: 12px; height: 18px; border-radius: 2px; background: #1B5E20; }
-.apache-icon::after { width: 28px; height: 4px; background: #000; transform: translate(-50%, -50%) rotate(45deg); }
-.patriot-icon::after { width: 10px; height: 10px; border-radius: 50%; background: #fff; }
-.ciws-icon::after { width: 12px; height: 16px; border-radius: 4px 4px 0 0; background: #fff; border: 1px solid #CFD8DC; }
-.barracks-icon::after { width: 14px; height: 14px; background: #fff; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
-.missile-silo-icon::after { width: 10px; height: 10px; border-radius: 50%; background: #F44336; border: 2px solid #fff; }
-.a10-warthog-icon::after { width: 24px; height: 6px; background: #000; transform: translate(-50%, -50%) rotate(-45deg); }
-.turret-icon::after { width: 20px; height: 20px; border-radius: 50%; }
-.sniper-icon::after { width: 10px; height: 30px; }
-.blaster-icon::after { width: 24px; height: 24px; border-radius: 2px; }
-.bomber-icon::after { width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(0, 0, 0, 0.5); }
-.rapid-fire-icon::after { width: 12px; height: 12px; border-radius: 50%; box-shadow: 14px 0 0 rgba(0, 0, 0, 0.3); }
-.ice-icon::after { width: 20px; height: 20px; transform: translate(-50%, -50%) rotate(45deg); border: 2px solid rgba(255, 255, 255, 0.5); }
-.poison-icon::after { width: 18px; height: 24px; border-radius: 50% 50% 5px 5px; }
-.laser-icon::after { width: 6px; height: 34px; background: rgba(255, 255, 255, 0.6); }
-.tesla-icon::after { width: 28px; height: 28px; border-radius: 50%; border: 2px dashed rgba(255, 255, 255, 0.5); }
-.rocket-icon::after { width: 16px; height: 28px; border-radius: 5px 5px 0 0; }
-.ballista-icon::after { width: 24px; height: 4px; background: #3E2723; transform: translate(-50%, -50%) rotate(-45deg); box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.2); }
+#tower-preview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 5px;
+}
+
+#tower-preview h3 {
+  margin: 0 0 5px;
+  color: #fff;
+}
+
+#tower-preview p {
+  margin: 0;
+  color: #aaa;
+  font-size: 0.8em;
+}
 
 .info {
     display: flex;
