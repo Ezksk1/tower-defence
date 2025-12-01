@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useRef, useCallback } from "react";
@@ -261,7 +262,7 @@ export function useGameLoop(
     }
     
     requestAnimationFrame(gameLoop);
-  }, [gameState.status, gameState.gameSpeed, setGameState, customPathPoints, handleStartWave]);
+  }, [gameState.status, gameState.gameSpeed, setGameState, customPathPoints]);
 
   // Second-based timer for waves
   useEffect(() => {
