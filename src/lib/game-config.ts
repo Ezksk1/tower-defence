@@ -112,7 +112,7 @@ export const ENEMIES: Record<string, EnemyData> = {
 };
 
 export const LEVELS: LevelData[] = [
-  { level: 1, name: "Winding Path", path: [ {x:0,y:9},{x:1,y:9},{x:2,y:9},{x:3,y:9},{x:4,y:9},{x:4,y:8},{x:4,y:7},{x:4,y:6},{x:4,y:5},{x:4,y:4},{x:4,y:3},{x:3,y:3},{x:2,y:3},{x:1,y:3},{x:1,y:4},{x:1,y:5},{x:1,y:6},{x:2,y:6},{x:3,y:6},{x:7,y:3},{x:7,y:2},{x:8,y:2},{x:9,y:2},{x:9,y:3},{x:9,y:4},{x:9,y:5},{x:9,y:6},{x:9,y:7},{x:8,y:7},{x:7,y:7},{x:7,y:8},{x:7,y:9},{x:7,y:10},{x:7,y:11},{x:7,y:12},{x:8,y:12},{x:9,y:12},{x:10,y:12},{x:11,y:12},{x:12,y:12},{x:13,y:12},{x:14,y:12},{x:15,y:12},{x:15,y:11},{x:15,y:10},{x:15,y:9},{x:15,y:8},{x:15,y:7},{x:15,y:6},{x:15,y:5},{x:14,y:5},{x:13,y:5},{x:12,y:5},{x:12,y:4},{x:12,y:3},{x:12,y:2},{x:13,y:2},{x:14,y:2},{x:15,y:2},{x:16,y:2},{x:17,y:2},{x:18,y:2},{x:19,y:2},{x:20,y:2},{x:21,y:2},{x:22,y:2},{x:23,y:2},{x:24,y:2},{x:25,y:2},{x:25,y:3},{x:25,y:4},{x:25,y:5},{x:25,y:6},{x:25,y:7},{x:25,y:8},{x:25,y:9},{x:25,y:10},{x:24,y:10},{x:23,y:10},{x:22,y:10},{x:21,y:10},{x:21,y:11},{x:21,y:12},{x:21,y:13},{x:21,y:14},{x:21,y:15},{x:22,y:15},{x:23,y:15},{x:24,y:15},{x:25,y:15},{x:26,y:15},{x:27,y:15},{x:28,y:15},{x:29,y:15} ]},
+  { level: 1, name: "Zigzag Path", path: [ {x:0,y:2},{x:1,y:2},{x:2,y:2},{x:2,y:3},{x:2,y:4},{x:1,y:4},{x:0,y:4},{x:0,y:5},{x:0,y:6},{x:1,y:6},{x:2,y:6},{x:3,y:6},{x:4,y:6},{x:4,y:5},{x:4,y:4},{x:5,y:4},{x:6,y:4},{x:6,y:5},{x:6,y:6},{x:7,y:6},{x:8,y:6},{x:8,y:5},{x:8,y:4},{x:8,y:3},{x:8,y:2},{x:7,y:2},{x:6,y:2},{x:6,y:1},{x:6,y:0},{x:7,y:0},{x:8,y:0},{x:9,y:0},{x:10,y:0},{x:10,y:1},{x:10,y:2},{x:11,y:2},{x:12,y:2},{x:12,y:3},{x:12,y:4},{x:13,y:4},{x:14,y:4},{x:14,y:5},{x:14,y:6},{x:15,y:6},{x:16,y:6},{x:16,y:5},{x:16,y:4},{x:17,y:4},{x:18,y:4},{x:18,y:3},{x:18,y:2},{x:19,y:2},{x:20,y:2},{x:20,y:3},{x:20,y:4},{x:20,y:5},{x:20,y:6},{x:19,y:6},{x:18,y:6},{x:18,y:7},{x:18,y:8},{x:19,y:8},{x:20,y:8},{x:21,y:8},{x:22,y:8},{x:22,y:7},{x:22,y:6},{x:23,y:6},{x:24,y:6},{x:24,y:7},{x:24,y:8},{x:25,y:8},{x:26,y:8},{x:26,y:7},{x:26,y:6},{x:27,y:6},{x:28,y:6},{x:29,y:6} ]},
   { level: 2, name: "Complex Path", path: [] },
 ];
 
@@ -162,7 +162,7 @@ export const ENEMIES_BY_WAVE: Record<number, EnemyId[]> = {
   17: [...Array(40).fill('tank'), ...Array(15).fill('heavy_tank'), ...Array(10).fill('jet')],
   18: [...Array(60).fill('tank'), ...Array(10).fill('heavy_tank')],
   19: [...Array(70).fill('humvee'), ...Array(15).fill('jet')],
-  20: [...Array(30).fill('tank'), ...Array(20).fill('heavy_tank'), ...Array(20).fill('angry_snowman'), ...Array(2).fill('krampus'), ...Array(1).fill('boss')],
+  20: [...Array(30).fill('tank'), ...Array(20).fill('heavy_tank'), ...Array(20).fill('angry_ snowman'), ...Array(2).fill('krampus'), ...Array(1).fill('boss')],
   21: [...Array(50).fill('troop'), ...Array(25).fill('jet')],
   22: [...Array(40).fill('humvee'), ...Array(25).fill('heavy_tank')],
   23: [...Array(80).fill('tank')],
