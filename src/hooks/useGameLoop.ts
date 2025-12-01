@@ -70,9 +70,16 @@ export function useGameLoop(
             if(prev.currentLevel === 5 && customPathPoints.length > 1){
                 currentPath = rasterizePath(customPathPoints);
             } else {
-                currentPath = LEVELS[prev.currentLevel - 1].path;
+                const levelIndex = prev.currentLevel - 1;
+                if (LEVELS[levelIndex]) {
+                    currentPath = LEVELS[levelIndex].path;
+                }
             }
             
+            if (!currentPath) { // If path is not available, don't update enemies
+              return prev;
+            }
+
             const updatedEnemies = prev.enemies.map(enemy => {
                 let newEnemy = {...enemy};
 
@@ -254,7 +261,7 @@ export function useGameLoop(
     }
     
     requestAnimationFrame(gameLoop);
-  }, [gameState.status, gameState.gameSpeed, setGameState, customPathPoints]);
+  }, [gameState.status, gameState.gameSpeed, setGameState, customPathPoints, handleStartWave]);
 
   // Second-based timer for waves
   useEffect(() => {
