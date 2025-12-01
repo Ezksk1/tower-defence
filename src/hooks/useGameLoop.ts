@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback } from "react";
 import type { GameState, ActiveEnemy, PlacedTower, Projectile, Soldier } from "@/lib/types";
-import { ENEMIES, LEVELS, TOWERS, GAME_CONFIG } from "@/lib/game-config";
+import { ENEMIES, LEVELS, TOWERS, GAME_CONFIG, rasterizePath } from "@/lib/game-config";
 
 const FRAME_TIME = 1000 / 60; // 60 FPS
 
@@ -29,10 +29,12 @@ function createSoldier(x: number, y: number, parent: PlacedTower): Soldier {
 export function useGameLoop(
   gameState: GameState,
   setGameState: React.Dispatch<React.SetStateAction<GameState>>,
-  handleStartWave: () => void
+  handleStartWave: () => void,
+  customPathPoints: {x:number, y:number}[]
 ) {
   const lastFrameTimeRef = useRef<number>(0);
   const gameTimeRef = useRef<number>(0);
+  const enemiesToSpawnRef = useRef<string[]>([]);
 
   const gameLoop = useCallback((timestamp: number) => {
     if (lastFrameTimeRef.current === 0) {
@@ -64,7 +66,13 @@ export function useGameLoop(
             let newMoney = prev.money;
 
             // 1. Update Enemies
-            const path = LEVELS[prev.currentLevel - 1].path;
+            let currentPath;
+            if(prev.currentLevel === 5 && customPathPoints.length > 1){
+                currentPath = rasterizePath(customPathPoints);
+            } else {
+                currentPath = LEVELS[prev.currentLevel - 1].path;
+            }
+            
             const updatedEnemies = prev.enemies.map(enemy => {
                 let newEnemy = {...enemy};
 
@@ -80,13 +88,13 @@ export function useGameLoop(
                     newEnemy.poisonTimer--;
                 }
 
-                if (newEnemy.pathIndex >= path.length) {
+                if (newEnemy.pathIndex >= currentPath.length) {
                     newLives--;
                     newEnemy.active = false;
                     return newEnemy;
                 }
                 
-                const targetNode = path[newEnemy.pathIndex];
+                const targetNode = currentPath[newEnemy.pathIndex];
                 const targetX = targetNode.x * GAME_CONFIG.CELL_WIDTH + GAME_CONFIG.CELL_WIDTH/2;
                 const targetY = targetNode.y * GAME_CONFIG.CELL_HEIGHT + GAME_CONFIG.CELL_HEIGHT/2;
                 
@@ -219,7 +227,7 @@ export function useGameLoop(
             // 4. Wave Management
             let newWave = prev.wave;
             let newWaveActive = prev.waveActive;
-            if (prev.waveActive && finalEnemies.length === 0 && updatedEnemies.length === 0 && enemiesToSpawnRef.current.length === 0) {
+            if (prev.waveActive && finalEnemies.length === 0 && enemiesToSpawnRef.current.length === 0) {
                  // Check if there are no more enemies on screen and no more to spawn
                 newWaveActive = false;
                 newWave++;
@@ -246,7 +254,7 @@ export function useGameLoop(
     }
     
     requestAnimationFrame(gameLoop);
-  }, [gameState.status, gameState.gameSpeed, setGameState, handleStartWave]);
+  }, [gameState.status, gameState.gameSpeed, setGameState, customPathPoints]);
 
   // Second-based timer for waves
   useEffect(() => {

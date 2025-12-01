@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useCallback, useMemo } from "react";
 import type { GameState, PlacedTower, ActiveEnemy, Decoration, Projectile } from "@/lib/types";
-import { GAME_CONFIG, LEVELS } from "@/lib/game-config";
+import { GAME_CONFIG, LEVELS, rasterizePath } from "@/lib/game-config";
 import { useToast } from "@/hooks/use-toast";
 
 interface GameBoardProps {
@@ -10,7 +10,11 @@ interface GameBoardProps {
   onDragOver: (e: React.DragEvent<HTMLCanvasElement>) => void;
   onDragLeave: (e: React.DragEvent<HTMLCanvasElement>) => void;
   onDrop: (e: React.DragEvent<HTMLCanvasElement>) => void;
+  onMouseDown: (e: React.MouseEvent<HTMLCanvasElement>) => void;
+  onMouseUp: (e: React.MouseEvent<HTMLCanvasElement>) => void;
+  onMouseMove: (e: React.MouseEvent<HTMLCanvasElement>) => void;
   canvasRef: React.RefObject<HTMLCanvasElement>;
+  customPathPoints: {x: number, y: number}[];
 }
 
 // Helper to lighten color
@@ -395,7 +399,17 @@ export function drawRealisticEnemy(ctx: CanvasRenderingContext2D, e: ActiveEnemy
 }
 
 
-export default function GameBoard({ gameState, onDrop, onDragOver, onDragLeave, canvasRef }: GameBoardProps) {
+export default function GameBoard({ 
+    gameState, 
+    onDrop, 
+    onDragOver, 
+    onDragLeave, 
+    onMouseDown,
+    onMouseUp,
+    onMouseMove,
+    canvasRef,
+    customPathPoints
+ }: GameBoardProps) {
 
   const snowTextures = useMemo(() => {
     const textures = [];
@@ -511,7 +525,13 @@ export default function GameBoard({ gameState, onDrop, onDragOver, onDragLeave, 
 
 
   const drawPath = useCallback((ctx: CanvasRenderingContext2D) => {
-    const path = LEVELS[gameState.currentLevel - 1].path;
+    let path;
+    if(gameState.currentLevel === 5 && customPathPoints.length > 1){
+        path = rasterizePath(customPathPoints);
+    } else {
+        path = LEVELS[gameState.currentLevel - 1].path;
+    }
+
     if (!path || path.length === 0) return;
     
     ctx.lineCap = 'round';
@@ -541,7 +561,7 @@ export default function GameBoard({ gameState, onDrop, onDragOver, onDragLeave, 
     ctx.setLineDash([15, 15]);
     ctx.stroke();
     ctx.setLineDash([]);
-  }, [gameState.currentLevel]);
+  }, [gameState.currentLevel, customPathPoints]);
 
   const drawTowers = useCallback((ctx: CanvasRenderingContext2D) => {
     gameState.towers.forEach(tower => {
@@ -611,7 +631,7 @@ export default function GameBoard({ gameState, onDrop, onDragOver, onDragLeave, 
     if (gameState.status === 'paused') {
       drawPausedOverlay(ctx);
     }
-  }, [gameState, drawBackground, drawPath, drawTowers, drawEnemies, drawProjectiles, drawPausedOverlay, canvasRef, drawDecorations]);
+  }, [gameState, customPathPoints, drawBackground, drawPath, drawTowers, drawEnemies, drawProjectiles, drawPausedOverlay, canvasRef, drawDecorations]);
   
   return (
       <canvas
@@ -621,6 +641,9 @@ export default function GameBoard({ gameState, onDrop, onDragOver, onDragLeave, 
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
+        onMouseDown={onMouseDown}
+        onMouseUp={onMouseUp}
+        onMouseMove={onMouseMove}
       />
   );
 }

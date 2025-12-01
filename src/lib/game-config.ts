@@ -112,7 +112,7 @@ export const ENEMIES: Record<string, EnemyData> = {
   krampus: { id: 'krampus', name: 'Krampus', speed: 1.0, baseHp: 500, hp: (w) => baseHp(w) * 50, color: '#3E2723', flying: false, size: { width: 30, height: 30 }, type: 'krampus' },
 };
 
-function rasterizePath(pathPoints: {x:number, y:number}[]) {
+export function rasterizePath(pathPoints: {x:number, y:number}[]) {
     const path = [];
     if (pathPoints.length === 0) return [];
     let current = pathPoints[0];
@@ -131,12 +131,12 @@ function rasterizePath(pathPoints: {x:number, y:number}[]) {
     return path;
 }
 
-const simpleZigZag = [
-    {x:0,y:2},{x:1,y:2},{x:2,y:2},{x:3,y:2},{x:4,y:2},{x:5,y:2},{x:6,y:2},{x:7,y:2},{x:7,y:3},{x:7,y:4},{x:6,y:4},{x:5,y:4},{x:4,y:4},{x:3,y:4},{x:2,y:4},{x:2,y:5},{x:2,y:6},{x:3,y:6},{x:4,y:6},{x:5,y:6},{x:6,y:6},{x:7,y:6},{x:8,y:6},{x:9,y:6},{x:10,y:6},{x:11,y:6},{x:12,y:6},{x:13,y:6},{x:14,y:6},{x:15,y:6},{x:16,y:6},{x:17,y:6},{x:18,y:6},{x:19,y:6},{x:20,y:6},{x:21,y:6},{x:22,y:6},{x:23,y:6},{x:24,y:6},{x:25,y:6},{x:26,y:6},{x:27,y:6},{x:28,y:6},{x:29,y:6}
+const frontlinePoints = [
+    {x: 0, y: 9}, {x: 4, y: 9}, {x: 4, y: 4}, {x: 9, y: 4}, {x: 9, y: 15}, {x: 14, y: 15}, {x: 14, y: 2}, {x: 22, y: 2}, {x: 22, y: 18}, {x: 29, y: 18}
 ];
 
 const gauntletPoints = [
-    {x: 0, y: 9}, {x: 25, y: 9}, {x: 25, y: 10}, {x: 5, y: 10}, {x: 5, y: 11}, {x: 29, y: 11}
+    {x: 0, y: 2}, {x: 25, y: 2}, {x: 25, y: 5}, {x: 2, y: 5}, {x: 2, y: 8}, {x: 25, y: 8}, {x: 25, y: 11}, {x: 2, y: 11}, {x: 2, y: 14}, {x: 25, y: 14}, {x: 25, y: 17}, {x: 29, y: 17}
 ];
 
 const serpentinePoints = [
@@ -148,7 +148,7 @@ const impossiblePoints = [
 ];
 
 export const LEVELS: LevelData[] = [
-  { level: 1, name: "The Frontline", path: rasterizePath(simpleZigZag) },
+  { level: 1, name: "The Frontline", path: rasterizePath(frontlinePoints) },
   { level: 2, name: "The Gauntlet", path: rasterizePath(gauntletPoints) },
   { level: 3, name: "Serpentine", path: rasterizePath(serpentinePoints) },
   { level: 4, name: "Winter's Bite (Impossible)", path: rasterizePath(impossiblePoints) },

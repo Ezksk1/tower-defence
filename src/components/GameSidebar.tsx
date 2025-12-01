@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { drawRealisticTower, drawRealisticEnemy } from "@/components/GameBoard";
 import GameControls from "./GameControls";
 import { Button } from "./ui/button";
-import { ShieldQuestion, X, Map } from "lucide-react";
+import { ShieldQuestion, X, Map, Pencil } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -36,6 +36,7 @@ interface GameSidebarProps {
   onRestart: () => void;
   onSpeedUp: () => void;
   onLevelChange: (level: number) => void;
+  onDrawPath: () => void;
 }
 
 const EnemyPreview = ({ enemy }: { enemy: EnemyData }) => {
@@ -155,7 +156,7 @@ const TowerPreview = ({ tower }: { tower: TowerData }) => {
 }
 
 
-export default function GameSidebar({ gameState, onDragStart, onStartWave, onPause, onSave, onLoad, onRestart, onSpeedUp, onLevelChange }: GameSidebarProps) {
+export default function GameSidebar({ gameState, onDragStart, onStartWave, onPause, onSave, onLoad, onRestart, onSpeedUp, onLevelChange, onDrawPath }: GameSidebarProps) {
   const [selectedTower, setSelectedTower] = useState<TowerData | null>(null);
 
   const handleTowerClick = (tower: TowerData) => {
@@ -232,6 +233,12 @@ export default function GameSidebar({ gameState, onDragStart, onStartWave, onPau
 
         <div className="flex flex-col gap-2">
             <EnemyBestiary />
+             {gameState.currentLevel === 5 && (
+              <Button onClick={onDrawPath} variant="outline">
+                <Pencil className="mr-2 h-4 w-4" />
+                Draw New Path
+              </Button>
+            )}
             <div className="grid w-full items-center gap-1.5">
               <Label htmlFor="level-select" className="flex items-center">
                 <Map className="mr-2 h-4 w-4" />
@@ -250,6 +257,7 @@ export default function GameSidebar({ gameState, onDragStart, onStartWave, onPau
                       {level.name}
                     </SelectItem>
                   ))}
+                   <SelectItem value="5">DIY Map</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -262,8 +270,10 @@ export default function GameSidebar({ gameState, onDragStart, onStartWave, onPau
         </div>
 
         <div id="message-area">
-          {!gameState.waveActive && gameState.waveTimer > 0 ? (
+          {!gameState.waveActive && gameState.waveTimer > 0 && gameState.lives > 0 ? (
               `Next wave in: ${gameState.waveTimer}s`
+          ) : gameState.lives <= 0 ? (
+              'Game Over'
           ) : `Wave ${gameState.wave} in progress...`}
         </div>
 

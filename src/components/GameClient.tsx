@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import type { GameState, PlacedTower, TowerData, ActiveEnemy, Soldier, Decoration } from "@/lib/types";
-import { GAME_CONFIG, LEVELS, TOWERS, ENEMIES_BY_WAVE, ENEMIES } from "@/lib/game-config";
+import { GAME_CONFIG, LEVELS, TOWERS, ENEMIES_BY_WAVE, ENEMIES, rasterizePath } from "@/lib/game-config";
 import GameBoard from "./GameBoard";
 import GameSidebar from "./GameSidebar";
 import { useGameLoop } from "@/hooks/useGameLoop";
@@ -66,6 +66,8 @@ export default function GameClient() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const enemiesToSpawnRef = useRef<string[]>([]);
   const spawnIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [isDrawingPath, setIsDrawingPath] = useState(false);
+  const [customPathPoints, setCustomPathPoints] = useState<{x: number, y: number}[]>([]);
 
   const spawnGroup = useCallback(() => {
     if (enemiesToSpawnRef.current.length === 0) {
@@ -76,10 +78,19 @@ export default function GameClient() {
     setGameState(prev => {
         const groupSize = Math.min(enemiesToSpawnRef.current.length, 10 + Math.floor(prev.wave / 5));
         const enemiesForThisSpawn = enemiesToSpawnRef.current.splice(0, groupSize); 
+        
+        let currentPath;
+        if(prev.currentLevel === 5 && customPathPoints.length > 1){
+            currentPath = rasterizePath(customPathPoints);
+        } else {
+            currentPath = LEVELS[prev.currentLevel - 1].path;
+        }
+
         const newEnemies = enemiesForThisSpawn.map((enemyId, index) => {
             const enemyData = ENEMIES[enemyId];
             if (!enemyData) return null;
-            const path = LEVELS[prev.currentLevel - 1].path;
+            const path = currentPath;
+            if (!path || path.length === 0) return null;
             const totalHp = enemyData.hp(prev.wave);
             return {
                 ...enemyData,
@@ -99,11 +110,16 @@ export default function GameClient() {
 
         return { ...prev, enemies: [...prev.enemies, ...newEnemies] };
     });
-  }, [setGameState]);
+  }, [setGameState, customPathPoints]);
 
 
   const handleStartWave = useCallback(() => {
     if (gameState.waveActive) return;
+    
+    if (gameState.currentLevel === 5 && customPathPoints.length < 2) {
+      toast({ variant: "destructive", title: "Invalid Path", description: "Please draw a path for the enemies first." });
+      return;
+    }
 
     setGameState(prev => {
       if (prev.lives <= 0) return prev;
@@ -124,9 +140,9 @@ export default function GameClient() {
           waveTimer: 0,
       };
     });
-  }, [gameState.waveActive, spawnGroup, gameState.gameSpeed]);
+  }, [gameState.waveActive, spawnGroup, gameState.gameSpeed, gameState.currentLevel, customPathPoints]);
 
-  useGameLoop(gameState, setGameState, handleStartWave);
+  useGameLoop(gameState, setGameState, handleStartWave, customPathPoints);
 
   const handleDragStart = (tower: TowerData) => {
     if (gameState.money >= tower.cost) {
@@ -137,8 +153,13 @@ export default function GameClient() {
   const handleDrop = (gridX: number, gridY: number) => {
     if (!draggingTower) return;
     
-    const path = LEVELS[gameState.currentLevel - 1].path;
-    const isOnPath = path.some(p => p.x === gridX && p.y === gridY);
+    let currentPath;
+    if(gameState.currentLevel === 5 && customPathPoints.length > 1){
+        currentPath = rasterizePath(customPathPoints);
+    } else {
+        currentPath = LEVELS[gameState.currentLevel - 1].path;
+    }
+    const isOnPath = currentPath.some(p => p.x === gridX && p.y === gridY);
     const isOccupied = gameState.towers.some(t => t.gridX === gridX && t.gridY === gridY);
     
     if (isOnPath || isOccupied) {
@@ -169,6 +190,7 @@ export default function GameClient() {
   
   const handleDragOver = (e: React.DragEvent<HTMLCanvasElement>) => {
     e.preventDefault();
+    if (isDrawingPath) return;
     e.dataTransfer.dropEffect = "copy";
     if(canvasRef.current) canvasRef.current.classList.add("drag-over");
   };
@@ -180,6 +202,7 @@ export default function GameClient() {
   const handleDropEvent = (e: React.DragEvent<HTMLCanvasElement>) => {
     e.preventDefault();
     if(canvasRef.current) canvasRef.current.classList.remove("drag-over");
+    if (isDrawingPath) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -198,6 +221,43 @@ export default function GameClient() {
     handleDrop(gridX, gridY);
   };
 
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!isDrawingPath) return;
+    setIsDrawingPath(true); // Redundant but safe
+    setCustomPathPoints([]); // Start new path
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!isDrawingPath) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const gridX = Math.floor(x / GAME_CONFIG.CELL_WIDTH);
+    const gridY = Math.floor(y / GAME_CONFIG.CELL_HEIGHT);
+
+    setCustomPathPoints(prev => {
+        const lastPoint = prev[prev.length -1];
+        if(!lastPoint || lastPoint.x !== gridX || lastPoint.y !== gridY) {
+            return [...prev, {x: gridX, y: gridY}];
+        }
+        return prev;
+    });
+  };
+
+  const handleMouseUp = () => {
+    if (isDrawingPath) {
+      setIsDrawingPath(false);
+      if (customPathPoints.length > 1) {
+        toast({ title: 'Path Saved!', description: 'Your custom path is ready for the next wave.' });
+      } else {
+        toast({ variant: "destructive", title: 'Path Too Short', description: 'Draw a longer path.' });
+      }
+    }
+  };
+
+
   const handlePause = () => {
     setGameState(prev => ({
         ...prev,
@@ -207,7 +267,11 @@ export default function GameClient() {
 
   const handleSave = () => {
       try {
-          localStorage.setItem('towerDefenseSave', JSON.stringify(gameState));
+          const stateToSave = {
+            ...gameState,
+            customPathPoints,
+          };
+          localStorage.setItem('towerDefenseSave', JSON.stringify(stateToSave));
           toast({ title: 'Game Saved!' });
       } catch (error) {
           console.error("Failed to save game", error);
@@ -222,6 +286,9 @@ export default function GameClient() {
               const loadedState = JSON.parse(savedState);
               // Make sure to reset transient state properties
               loadedState.status = 'paused';
+              if (loadedState.customPathPoints) {
+                setCustomPathPoints(loadedState.customPathPoints);
+              }
               enemiesToSpawnRef.current = [];
               if (spawnIntervalRef.current) clearInterval(spawnIntervalRef.current);
               setGameState(loadedState);
@@ -239,13 +306,21 @@ export default function GameClient() {
     if (spawnIntervalRef.current) clearInterval(spawnIntervalRef.current);
     enemiesToSpawnRef.current = [];
     const newLevel = level !== undefined ? level : gameState.currentLevel;
-    const newPath = LEVELS[newLevel - 1].path;
+    let newPath;
+    if(newLevel === 5) {
+      newPath = [];
+      setCustomPathPoints([]);
+      toast({ title: 'Draw Your Path!', description: "Click and drag on the map to create a path for the enemies."});
+    } else {
+      newPath = LEVELS[newLevel - 1].path;
+    }
     setGameState({
         ...initialGameState,
         currentLevel: newLevel,
         decorations: generateDecorations(30, newPath),
     });
-    toast({ title: `Game Restarted on ${LEVELS[newLevel - 1].name}!`});
+    const levelName = newLevel === 5 ? "DIY Map" : LEVELS[newLevel - 1].name;
+    toast({ title: `Game Restarted on ${levelName}!`});
   };
 
   const handleLevelChange = (level: number) => {
@@ -257,6 +332,7 @@ export default function GameClient() {
     if (gameState.gameSpeed === 1) newSpeed = 2;
     else if (gameState.gameSpeed === 2) newSpeed = 4;
     else newSpeed = 1;
+
     setGameState(prev => ({...prev, gameSpeed: newSpeed}));
     toast({ title: `Game speed set to ${newSpeed}x` });
   };
@@ -269,6 +345,10 @@ export default function GameClient() {
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDropEvent}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+        customPathPoints={customPathPoints}
       />
       <GameSidebar 
         gameState={gameState} 
@@ -280,6 +360,7 @@ export default function GameClient() {
         onRestart={() => handleRestart()}
         onSpeedUp={handleSpeedUp}
         onLevelChange={handleLevelChange}
+        onDrawPath={() => setIsDrawingPath(true)}
       />
     </div>
   );
