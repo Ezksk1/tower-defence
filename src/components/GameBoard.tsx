@@ -355,28 +355,56 @@ function drawRealisticEnemy(ctx: CanvasRenderingContext2D, e: ActiveEnemy) {
 export default function GameBoard({ gameState, onDrop, onDragOver, onDragLeave, canvasRef }: GameBoardProps) {
 
   const drawBackground = useCallback((ctx: CanvasRenderingContext2D) => {
-    const skyGradient = ctx.createLinearGradient(0, 0, 0, GAME_CONFIG.GRID_HEIGHT);
-    skyGradient.addColorStop(0, '#87CEEB');
-    skyGradient.addColorStop(1, '#E0F6FF');
-    ctx.fillStyle = skyGradient;
-    ctx.fillRect(0, 0, GAME_CONFIG.GRID_WIDTH, GAME_CONFIG.GRID_HEIGHT);
+    const W = GAME_CONFIG.GRID_WIDTH;
+    const H = GAME_CONFIG.GRID_HEIGHT;
 
-    ctx.fillStyle = '#B0C4DE';
+    // Sky
+    const skyGradient = ctx.createLinearGradient(0, 0, 0, H * 0.7);
+    skyGradient.addColorStop(0, '#0d1a2f');
+    skyGradient.addColorStop(0.5, '#234a7c');
+    skyGradient.addColorStop(1, '#87CEEB');
+    ctx.fillStyle = skyGradient;
+    ctx.fillRect(0, 0, W, H);
+
+    // Far mountains
+    ctx.fillStyle = '#394867';
     ctx.beginPath();
-    ctx.moveTo(0, GAME_CONFIG.GRID_HEIGHT * 0.5);
-    ctx.lineTo(GAME_CONFIG.GRID_WIDTH * 0.2, GAME_CONFIG.GRID_HEIGHT * 0.3);
-    ctx.lineTo(GAME_CONFIG.GRID_WIDTH * 0.4, GAME_CONFIG.GRID_HEIGHT * 0.4);
-    ctx.lineTo(GAME_CONFIG.GRID_WIDTH * 0.6, GAME_CONFIG.GRID_HEIGHT * 0.25);
-    ctx.lineTo(GAME_CONFIG.GRID_WIDTH * 0.8, GAME_CONFIG.GRID_HEIGHT * 0.35);
-    ctx.lineTo(GAME_CONFIG.GRID_WIDTH, GAME_CONFIG.GRID_HEIGHT * 0.45);
-    ctx.lineTo(GAME_CONFIG.GRID_WIDTH, GAME_CONFIG.GRID_HEIGHT);
-    ctx.lineTo(0, GAME_CONFIG.GRID_HEIGHT);
+    ctx.moveTo(0, H * 0.6);
+    ctx.bezierCurveTo(W * 0.1, H * 0.45, W * 0.2, H * 0.55, W * 0.3, H * 0.5);
+    ctx.bezierCurveTo(W * 0.4, H * 0.4, W * 0.55, H * 0.5, W * 0.7, H * 0.45);
+    ctx.bezierCurveTo(W * 0.8, H * 0.4, W * 0.9, H * 0.55, W, H * 0.5);
+    ctx.lineTo(W, H);
+    ctx.lineTo(0, H);
     ctx.closePath();
     ctx.fill();
 
-    ctx.fillStyle = '#F0F8FF';
-    ctx.fillRect(0, GAME_CONFIG.GRID_HEIGHT * 0.85, GAME_CONFIG.GRID_WIDTH, GAME_CONFIG.GRID_HEIGHT * 0.15);
-  }, []);
+    // Near mountains
+    ctx.fillStyle = '#607D8B';
+    ctx.beginPath();
+    ctx.moveTo(0, H * 0.7);
+    ctx.bezierCurveTo(W * 0.2, H * 0.5, W * 0.35, H * 0.65, W * 0.5, H * 0.6);
+    ctx.bezierCurveTo(W * 0.6, H * 0.55, W * 0.8, H * 0.7, W, H * 0.65);
+    ctx.lineTo(W, H);
+    ctx.lineTo(0, H);
+    ctx.closePath();
+    ctx.fill();
+
+    // Snowy ground layers
+    const groundGradient = ctx.createLinearGradient(0, H * 0.6, 0, H);
+    groundGradient.addColorStop(0, '#F0F8FF');
+    groundGradient.addColorStop(0.3, '#FFFFFF');
+    groundGradient.addColorStop(1, '#E0F0FF');
+    ctx.fillStyle = groundGradient;
+    ctx.fillRect(0, H * 0.65, W, H * 0.35);
+
+    // Add some subtle texture to snow
+    ctx.fillStyle = 'rgba(210, 220, 230, 0.3)';
+    for(let i=0; i<50; i++){
+        ctx.beginPath();
+        ctx.arc(Math.random()*W, H*0.65 + Math.random() * (H*0.35), Math.random()*20+5, 0, Math.PI*2);
+        ctx.fill();
+    }
+}, []);
 
   const drawDecorations = useCallback((ctx: CanvasRenderingContext2D) => {
     gameState.decorations.forEach(d => {
