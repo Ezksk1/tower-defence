@@ -3,19 +3,21 @@
 
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { ENEMIES, TOWERS, LEVELS } from "@/lib/game-config";
-import type { GameState, TowerData, PlacedTower, EnemyData } from "@/lib/types";
+import { ENEMIES, TOWERS, LEVELS, DIY_COMPONENTS } from "@/lib/game-config";
+import type { GameState, TowerData, PlacedTower, EnemyData, DIYTower, DIYChassis, DIYWeapon, DIYAccessory } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { drawRealisticTower, drawRealisticEnemy } from "@/components/GameBoard";
 import GameControls from "./GameControls";
 import { Button } from "./ui/button";
-import { ShieldQuestion, X, Map, Pencil } from "lucide-react";
+import { ShieldQuestion, X, Map, Pencil, Wrench, Save } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "./ui/scroll-area";
 import {
@@ -26,6 +28,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { useToast } from "@/hooks/use-toast";
 
 interface GameSidebarProps {
   gameState: GameState;
@@ -39,6 +43,8 @@ interface GameSidebarProps {
   onLevelChange: (level: number) => void;
   onDrawPath: () => void;
   isDrawingPath: boolean;
+  customTowers: DIYTower[];
+  onAddCustomTower: (tower: DIYTower) => void;
 }
 
 const EnemyPreview = ({ enemy }: { enemy: EnemyData }) => {
@@ -110,7 +116,7 @@ const EnemyBestiary = () => {
 };
 
 
-const TowerPreview = ({ tower }: { tower: TowerData }) => {
+const TowerPreview = ({ tower }: { tower: TowerData | DIYTower }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const animationFrameId = useRef<number>();
     const angle = useRef(0);
@@ -157,11 +163,129 @@ const TowerPreview = ({ tower }: { tower: TowerData }) => {
     return <canvas ref={canvasRef} />;
 }
 
+const DIYTowerBuilder = ({ onSave }: { onSave: (tower: DIYTower) => void }) => {
+  const [name, setName] = useState("Custom Tower");
+  const [chassis, setChassis] = useState<DIYChassis>(DIY_COMPONENTS.chassis[0]);
+  const [weapon, setWeapon] = useState<DIYWeapon>(DIY_COMPONENTS.weapons[0]);
+  const [accessory, setAccessory] = useState<DIYAccessory>(DIY_COMPONENTS.accessories[0]);
+  const [finalTower, setFinalTower] = useState<DIYTower | null>(null);
+  const { toast } = useToast();
 
-export default function GameSidebar({ gameState, onDragStart, onStartWave, onPause, onSave, onLoad, onRestart, onSpeedUp, onLevelChange, onDrawPath, isDrawingPath }: GameSidebarProps) {
-  const [selectedTower, setSelectedTower] = useState<TowerData | null>(null);
+  useEffect(() => {
+    // Calculate final tower stats
+    const cost = chassis.cost + weapon.cost + accessory.cost;
+    const damage = weapon.damage * (accessory.damageMultiplier || 1);
+    const range = weapon.range * (accessory.rangeMultiplier || 1);
+    const rate = weapon.rate * (accessory.rateMultiplier || 1);
+    const splash = (weapon.splash || 0) + (accessory.splashBonus || 0);
 
-  const handleTowerClick = (tower: TowerData) => {
+    const newTower: DIYTower = {
+      id: `custom_${Date.now()}`,
+      name,
+      cost,
+      damage,
+      range,
+      rate,
+      splash: splash > 0 ? splash : undefined,
+      isCustom: true,
+      chassis: chassis.id,
+      weapon: weapon.id,
+      accessory: accessory.id,
+      iconUrl: weapon.iconUrl,
+      iconHint: weapon.iconHint,
+    };
+    setFinalTower(newTower);
+  }, [name, chassis, weapon, accessory]);
+
+  const handleSave = () => {
+    if (!name.trim()) {
+      toast({ variant: "destructive", title: "Invalid Name", description: "Please give your tower a name."});
+      return;
+    }
+    if (finalTower) {
+      onSave({ ...finalTower, name });
+      toast({ title: "Tower Saved!", description: `Your "${name}" tower is ready for battle.`});
+    }
+  };
+  
+  if (!finalTower) return null;
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="accent" className="w-full">
+          <Wrench className="mr-2 h-4 w-4" />
+          Build a Tower
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-3xl">
+        <DialogHeader>
+          <DialogTitle>DIY Tower Builder</DialogTitle>
+        </DialogHeader>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Left Side: Controls */}
+          <div className="flex flex-col gap-4">
+             <div className="grid gap-2">
+              <Label htmlFor="tower-name">Tower Name</Label>
+              <Input id="tower-name" value={name} onChange={(e) => setName(e.target.value)} />
+            </div>
+            <div className="grid gap-2">
+              <Label>Chassis</Label>
+              <Select onValueChange={(val) => setChassis(DIY_COMPONENTS.chassis.find(c => c.id === val)!)} defaultValue={chassis.id}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {DIY_COMPONENTS.chassis.map(c => <SelectItem key={c.id} value={c.id}>{c.name} (+${c.cost})</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+             <div className="grid gap-2">
+              <Label>Weapon</Label>
+              <Select onValueChange={(val) => setWeapon(DIY_COMPONENTS.weapons.find(w => w.id === val)!)} defaultValue={weapon.id}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {DIY_COMPONENTS.weapons.map(w => <SelectItem key={w.id} value={w.id}>{w.name} (+${w.cost})</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+             <div className="grid gap-2">
+              <Label>Accessory</Label>
+              <Select onValueChange={(val) => setAccessory(DIY_COMPONENTS.accessories.find(a => a.id === val)!)} defaultValue={accessory.id}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {DIY_COMPONENTS.accessories.map(a => <SelectItem key={a.id} value={a.id}>{a.name} (+${a.cost})</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          {/* Right Side: Preview */}
+          <div className="flex flex-col items-center justify-center p-4 bg-card rounded-lg">
+             <h3 className="text-xl font-bold">{finalTower.name}</h3>
+             <TowerPreview tower={finalTower} />
+             <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm w-full">
+                <span>Cost: <span className="font-bold text-yellow-400">${finalTower.cost}</span></span>
+                <span>Damage: <span className="font-bold">{finalTower.damage}</span></span>
+                <span>Range: <span className="font-bold">{finalTower.range}</span></span>
+                <span>Fire Rate: <span className="font-bold">{finalTower.rate}</span></span>
+                {finalTower.splash && <span>Splash: <span className="font-bold">{finalTower.splash}</span></span>}
+             </div>
+             <p className="text-xs text-muted-foreground mt-2 text-center">{accessory.description}</p>
+          </div>
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button onClick={handleSave}><Save className="mr-2 h-4 w-4"/> Save and Close</Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+
+export default function GameSidebar({ gameState, onDragStart, onStartWave, onPause, onSave, onLoad, onRestart, onSpeedUp, onLevelChange, onDrawPath, isDrawingPath, customTowers, onAddCustomTower }: GameSidebarProps) {
+  const [selectedTower, setSelectedTower] = useState<TowerData | DIYTower | null>(null);
+
+  const handleTowerClick = (tower: TowerData | DIYTower) => {
     setSelectedTower(tower);
   };
   
@@ -176,7 +300,7 @@ export default function GameSidebar({ gameState, onDragStart, onStartWave, onPau
   return (
     <div id="sidebar">
       <h2>Winter Warfare</h2>
-      <p className="instruction">Drag towers to the battlefield</p>
+      <p className="instruction">Build or drag towers to fight!</p>
 
       {selectedTower && (
         <div id="tower-preview" className="relative">
@@ -200,6 +324,28 @@ export default function GameSidebar({ gameState, onDragStart, onStartWave, onPau
       )}
       
       <div id="tower-list">
+        {customTowers.map((tower) => {
+          const canAfford = gameState.money >= tower.cost;
+          return (
+            <div
+              key={tower.id}
+              draggable={canAfford}
+              onDragStart={() => onDragStart(tower)}
+              onClick={() => handleTowerClick(tower)}
+              className={cn("tower-card", !canAfford && "disabled")}
+              title={`${tower.name} - $${tower.cost}`}
+              data-type={tower.id}
+            >
+              <div className="icon">
+                 <Image src={tower.iconUrl} alt={tower.name} width={32} height={32} data-ai-hint={tower.iconHint} />
+              </div>
+              <div className="info">
+                <span className="name">{tower.name}</span>
+                <span className="cost">${tower.cost}</span>
+              </div>
+            </div>
+          );
+        })}
         {Object.values(TOWERS).map((tower) => {
           if (!tower || !tower.id) return null;
           
@@ -234,6 +380,7 @@ export default function GameSidebar({ gameState, onDragStart, onStartWave, onPau
         <GameControls onPause={onPause} onSave={onSave} onLoad={onLoad} onRestart={onRestart} onSpeedUp={onSpeedUp} gameState={gameState} />
 
         <div className="flex flex-col gap-2">
+            <DIYTowerBuilder onSave={onAddCustomTower} />
             <EnemyBestiary />
              {gameState.currentLevel === 5 && (
               <Button onClick={onDrawPath} variant={isDrawingPath ? "secondary" : "outline"}>

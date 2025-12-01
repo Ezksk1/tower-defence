@@ -1,8 +1,9 @@
+
 "use client";
 
 import { useRef, useEffect, useCallback, useMemo } from "react";
-import type { GameState, PlacedTower, ActiveEnemy, Decoration, Projectile } from "@/lib/types";
-import { GAME_CONFIG, LEVELS, rasterizePath } from "@/lib/game-config";
+import type { GameState, PlacedTower, ActiveEnemy, Decoration, Projectile, DIYTower } from "@/lib/types";
+import { GAME_CONFIG, LEVELS, rasterizePath, DIY_COMPONENTS } from "@/lib/game-config";
 import { useToast } from "@/hooks/use-toast";
 
 interface GameBoardProps {
@@ -35,13 +36,67 @@ export function drawRealisticTower(ctx: CanvasRenderingContext2D, t: PlacedTower
     const x = t.x;
     const y = t.y;
     const color = t.color || '#ccc';
-    const type = t.name.toLowerCase();
 
     // Shadow
     ctx.fillStyle = 'rgba(0,0,0,0.4)';
     ctx.beginPath();
     ctx.ellipse(x + 4, y + 4, 20, 14, 0, 0, Math.PI * 2);
     ctx.fill();
+
+    // --- Custom Tower Logic ---
+    if ('isCustom' in t) {
+      const customTower = t as PlacedTower & DIYTower;
+      const chassis = DIY_COMPONENTS.chassis.find(c => c.id === customTower.chassis);
+      const weapon = DIY_COMPONENTS.weapons.find(w => w.id === customTower.weapon);
+
+      if (chassis) {
+        const chassisGrad = ctx.createRadialGradient(x - 5, y - 5, 5, x, y, 18);
+        chassisGrad.addColorStop(0, lightenColor(chassis.color, 20));
+        chassisGrad.addColorStop(0.7, chassis.color);
+        chassisGrad.addColorStop(1, lightenColor(chassis.color, -20));
+        ctx.fillStyle = chassisGrad;
+        ctx.beginPath();
+        ctx.arc(x, y, 18, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#1a1a1a';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(t.angle || 0);
+
+      if (weapon) {
+        ctx.fillStyle = lightenColor(weapon.color, 10);
+        ctx.strokeStyle = weapon.color;
+        ctx.lineWidth = 2;
+
+        switch(weapon.id) {
+          case 'gun':
+            ctx.fillRect(8, -3, 16, 6);
+            ctx.strokeRect(8, -3, 16, 6);
+            break;
+          case 'cannon':
+            ctx.fillRect(8, -4, 20, 8);
+            ctx.strokeRect(8, -4, 20, 8);
+            break;
+          case 'laser':
+            ctx.beginPath();
+            ctx.moveTo(8, -2); ctx.lineTo(25, -4); ctx.lineTo(25, 4); ctx.lineTo(8, 2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            break;
+        }
+      }
+
+      ctx.restore();
+      return;
+    }
+
+    // --- Original Tower Logic ---
+    const type = t.name.toLowerCase();
 
     // Base platform - consistent for all
     const gradBase = ctx.createRadialGradient(x - 5, y - 5, 5, x, y, 18);

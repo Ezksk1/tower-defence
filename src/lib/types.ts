@@ -21,7 +21,7 @@ export type TowerId =
 
 
 export interface TowerData {
-  id: TowerId;
+  id: TowerId | string; // Allow string for custom towers
   name: string;
   cost: number;
   range: number;
@@ -64,6 +64,50 @@ export interface TowerData {
   color?: string;
 }
 
+export type DIYChassisId = 'light' | 'medium' | 'heavy';
+export type DIYWeaponId = 'gun' | 'cannon' | 'laser';
+export type DIYAccessoryId = 'scope' | 'aoe' | 'frost';
+
+export interface DIYChassis {
+  id: DIYChassisId;
+  name: string;
+  cost: number;
+  color: string;
+}
+
+export interface DIYWeapon {
+  id: DIYWeaponId;
+  name: string;
+  cost: number;
+  damage: number;
+  range: number;
+  rate: number;
+  splash?: number;
+  color: string;
+  iconUrl: string;
+  iconHint: string;
+}
+
+export interface DIYAccessory {
+  id: DIYAccessoryId;
+  name: string;
+  description: string;
+  cost: number;
+  damageMultiplier?: number;
+  rangeMultiplier?: number;
+  rateMultiplier?: number;
+  splashBonus?: number;
+}
+
+
+export interface DIYTower extends TowerData {
+    isCustom: true;
+    chassis: DIYChassisId;
+    weapon: DIYWeaponId;
+    accessory: DIYAccessoryId;
+}
+
+
 export interface PlacedTower extends TowerData {
   idInGame: string; // unique id for each placed tower
   x: number;
@@ -73,6 +117,10 @@ export interface PlacedTower extends TowerData {
   cooldown: number;
   target?: string; // enemy id
   angle?: number;
+  isCustom?: boolean; // For DIY towers
+  chassis?: DIYChassisId;
+  weapon?: DIYWeaponId;
+  accessory?: DIYAccessoryId;
 }
 
 export type EnemyId =

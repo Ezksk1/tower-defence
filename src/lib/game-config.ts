@@ -1,4 +1,4 @@
-import type { TowerData, EnemyData, LevelData, TowerId, EnemyId } from './types';
+import type { TowerData, EnemyData, LevelData, TowerId, EnemyId, DIYChassis, DIYWeapon, DIYAccessory } from './types';
 import placeholderData from './placeholder-images.json';
 
 const towerPlaceholders = new Map(placeholderData.placeholderImages.map(p => [p.id, p]));
@@ -21,6 +21,28 @@ export const GAME_CONFIG = {
   STARTING_LIVES: 20,
   STARTING_MONEY: 250,
   WAVE_TIMER_DURATION: 15,
+};
+
+export const DIY_COMPONENTS: {
+  chassis: DIYChassis[];
+  weapons: DIYWeapon[];
+  accessories: DIYAccessory[];
+} = {
+  chassis: [
+    { id: 'light', name: 'Light Chassis', cost: 25, color: '#B0BEC5' },
+    { id: 'medium', name: 'Medium Chassis', cost: 50, color: '#78909C' },
+    { id: 'heavy', name: 'Heavy Chassis', cost: 100, color: '#455A64' },
+  ],
+  weapons: [
+    { id: 'gun', name: 'Machine Gun', cost: 50, damage: 10, range: 120, rate: 20, color: '#FFC107', ...getTowerIcon('rapid_fire_icon') },
+    { id: 'cannon', name: 'Cannon', cost: 100, damage: 50, range: 150, rate: 80, splash: 30, color: '#F44336', ...getTowerIcon('bomber_icon') },
+    { id: 'laser', name: 'Laser Beam', cost: 150, damage: 8, range: 180, rate: 5, color: '#03A9F4', ...getTowerIcon('laser_icon') },
+  ],
+  accessories: [
+    { id: 'scope', name: 'Scope', description: '+25% Range', cost: 50, rangeMultiplier: 1.25 },
+    { id: 'aoe', name: 'Explosive Rounds', description: '+20 Splash Radius', cost: 75, splashBonus: 20 },
+    { id: 'frost', name: 'Cryo Ammo', description: 'Slows enemies on hit', cost: 100, rateMultiplier: 1.2 }, // Represent slow via rate
+  ]
 };
 
 export const TOWERS: Record<TowerId, TowerData> = {

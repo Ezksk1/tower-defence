@@ -1,8 +1,9 @@
 
+
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import type { GameState, PlacedTower, TowerData, ActiveEnemy, Soldier, Decoration } from "@/lib/types";
+import type { GameState, PlacedTower, TowerData, ActiveEnemy, Soldier, Decoration, DIYTower } from "@/lib/types";
 import { GAME_CONFIG, LEVELS, TOWERS, ENEMIES_BY_WAVE, ENEMIES, rasterizePath } from "@/lib/game-config";
 import GameBoard from "./GameBoard";
 import GameSidebar from "./GameSidebar";
@@ -62,13 +63,18 @@ const initialGameState: GameState = {
 
 export default function GameClient() {
   const [gameState, setGameState] = useState<GameState>(initialGameState);
-  const [draggingTower, setDraggingTower] = useState<TowerData | null>(null);
+  const [draggingTower, setDraggingTower] = useState<TowerData | DIYTower | null>(null);
   const { toast } = useToast();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const enemiesToSpawnRef = useRef<string[]>([]);
   const spawnIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isDrawingPath, setIsDrawingPath] = useState(false);
   const [customPathPoints, setCustomPathPoints] = useState<{x: number, y: number}[]>([]);
+  const [customTowers, setCustomTowers] = useState<DIYTower[]>([]);
+
+  const addCustomTower = (tower: DIYTower) => {
+    setCustomTowers(prev => [...prev, tower]);
+  };
 
   const spawnGroup = useCallback(() => {
     if (enemiesToSpawnRef.current.length === 0) {
@@ -90,18 +96,18 @@ export default function GameClient() {
             }
         }
 
-        if (!currentPath) return prev;
+        if (!currentPath || currentPath.length < 1) return prev;
 
         const newEnemies = enemiesForThisSpawn.map((enemyId, index) => {
             const enemyData = ENEMIES[enemyId];
             if (!enemyData) return null;
-            if (!currentPath || currentPath.length === 0) return null;
+            
             const totalHp = enemyData.hp(prev.wave);
             return {
                 ...enemyData,
                 idInGame: `${prev.wave}-${Date.now()}-${index}`,
-                x: currentPath[0].x * GAME_CONFIG.CELL_WIDTH + GAME_CONFIG.CELL_WIDTH/2 - (index * 25), // Offset spawn for tighter groups
-                y: currentPath[0].y * GAME_CONFIG.CELL_HEIGHT + GAME_CONFIG.CELL_HEIGHT/2,
+                x: currentPath![0].x * GAME_CONFIG.CELL_WIDTH + GAME_CONFIG.CELL_WIDTH/2 - (index * 25), // Offset spawn for tighter groups
+                y: currentPath![0].y * GAME_CONFIG.CELL_HEIGHT + GAME_CONFIG.CELL_HEIGHT/2,
                 currentHp: totalHp,
                 totalHp: totalHp,
                 pathIndex: 0,
@@ -151,7 +157,7 @@ export default function GameClient() {
 
   useGameLoop(gameState, setGameState, handleStartWave, customPathPoints);
 
-  const handleDragStart = (tower: TowerData) => {
+  const handleDragStart = (tower: TowerData | DIYTower) => {
     if (gameState.money >= tower.cost) {
       setDraggingTower(tower);
     }
@@ -177,23 +183,37 @@ export default function GameClient() {
        setDraggingTower(null);
        return;
     }
+    
+    let towerToAdd: PlacedTower;
+
+    if ('isCustom' in draggingTower) {
+        towerToAdd = {
+            ...(draggingTower as DIYTower),
+            idInGame: crypto.randomUUID(),
+            x: gridX * GAME_CONFIG.CELL_WIDTH + GAME_CONFIG.CELL_WIDTH / 2,
+            y: gridY * GAME_CONFIG.CELL_HEIGHT + GAME_CONFIG.CELL_HEIGHT / 2,
+            gridX,
+            gridY,
+            cooldown: 0,
+            angle: 0,
+        };
+    } else {
+        towerToAdd = {
+            ...(TOWERS[draggingTower.id as keyof typeof TOWERS] as TowerData),
+            idInGame: crypto.randomUUID(),
+            x: gridX * GAME_CONFIG.CELL_WIDTH + GAME_CONFIG.CELL_WIDTH / 2,
+            y: gridY * GAME_CONFIG.CELL_HEIGHT + GAME_CONFIG.CELL_HEIGHT / 2,
+            gridX,
+            gridY,
+            cooldown: 0,
+            angle: 0,
+        };
+    }
 
     setGameState((prev) => ({
       ...prev,
       money: prev.money - draggingTower.cost,
-      towers: [
-        ...prev.towers,
-        {
-          ...(TOWERS[draggingTower.id] as TowerData),
-          idInGame: crypto.randomUUID(),
-          x: gridX * GAME_CONFIG.CELL_WIDTH + GAME_CONFIG.CELL_WIDTH / 2,
-          y: gridY * GAME_CONFIG.CELL_HEIGHT + GAME_CONFIG.CELL_HEIGHT / 2,
-          gridX,
-          gridY,
-          cooldown: 0,
-          angle: 0,
-        },
-      ],
+      towers: [...prev.towers, towerToAdd],
     }));
     setDraggingTower(null);
   };
@@ -289,6 +309,7 @@ export default function GameClient() {
           const stateToSave = {
             ...gameState,
             customPathPoints,
+            customTowers,
           };
           localStorage.setItem('towerDefenseSave', JSON.stringify(stateToSave));
           toast({ title: 'Game Saved!' });
@@ -307,6 +328,9 @@ export default function GameClient() {
               loadedState.status = 'paused';
               if (loadedState.customPathPoints) {
                 setCustomPathPoints(loadedState.customPathPoints);
+              }
+              if (loadedState.customTowers) {
+                setCustomTowers(loadedState.customTowers);
               }
               enemiesToSpawnRef.current = [];
               if (spawnIntervalRef.current) clearInterval(spawnIntervalRef.current);
@@ -393,6 +417,8 @@ export default function GameClient() {
         onLevelChange={handleLevelChange}
         onDrawPath={toggleDrawingPath}
         isDrawingPath={isDrawingPath}
+        customTowers={customTowers}
+        onAddCustomTower={addCustomTower}
       />
     </div>
   );
