@@ -104,17 +104,13 @@ export const ENEMIES: Record<string, EnemyData> = {
   heavy_tank: { id: 'heavy_tank', name: 'Heavy Tank', speed: 0.4, baseHp: 200, hp: (w) => baseHp(w) * 20.0, color: '#1B5E20', flying: false, size: { width: 45, height: 30 }, type: 'heavy_tank' },
   jet: { id: 'jet', name: 'Jet', speed: 4.0, baseHp: 40, hp: (w) => baseHp(w) * 4.0, color: '#455A64', flying: true, size: { width: 30, height: 30 }, type: 'jet' },
   boss: { id: 'boss', name: 'Boss', speed: 0.5, baseHp: 1000, hp: (w) => baseHp(w) * 100.0, color: '#C62828', flying: false, size: { width: 50, height: 50 }, type: 'boss' },
+  mega_boss: { id: 'mega_boss', name: 'Mega Boss', speed: 0.3, baseHp: 5000, hp: (w) => baseHp(w) * 500.0, color: '#000000', flying: false, size: { width: 80, height: 80 }, type: 'mega_boss' },
   reindeer: { id: 'reindeer', name: 'Reindeer', speed: 1.8, baseHp: 12, hp: (w) => baseHp(w) * 1.2, color: '#795548', flying: false, size: { width: 12, height: 12 }, type: 'reindeer' },
   elf_warrior: { id: 'elf_warrior', name: 'Elf Warrior', speed: 1.5, baseHp: 15, hp: (w) => baseHp(w) * 1.5, color: '#2E7D32', flying: false, size: { width: 10, height: 10 }, type: 'elf_warrior' },
   toy_soldier: { id: 'toy_soldier', name: 'Toy Soldier', speed: 1.2, baseHp: 15, hp: (w) => baseHp(w) * 1.5, color: '#D32F2F', flying: false, size: { width: 10, height: 10 }, type: 'toy_soldier' },
   angry_snowman: { id: 'angry_snowman', name: 'Angry Snowman', speed: 0.8, baseHp: 100, hp: (w) => baseHp(w) * 10, color: '#FFFFFF', flying: false, size: { width: 20, height: 20 }, type: 'angry_snowman' },
   krampus: { id: 'krampus', name: 'Krampus', speed: 1.0, baseHp: 500, hp: (w) => baseHp(w) * 50, color: '#3E2723', flying: false, size: { width: 30, height: 30 }, type: 'krampus' },
 };
-
-export const LEVELS: LevelData[] = [
-  { level: 1, name: "Zigzag Path", path: [ {x:0,y:2},{x:1,y:2},{x:2,y:2},{x:2,y:3},{x:2,y:4},{x:1,y:4},{x:0,y:4},{x:0,y:5},{x:0,y:6},{x:1,y:6},{x:2,y:6},{x:3,y:6},{x:4,y:6},{x:4,y:5},{x:4,y:4},{x:5,y:4},{x:6,y:4},{x:6,y:5},{x:6,y:6},{x:7,y:6},{x:8,y:6},{x:8,y:5},{x:8,y:4},{x:8,y:3},{x:8,y:2},{x:7,y:2},{x:6,y:2},{x:6,y:1},{x:6,y:0},{x:7,y:0},{x:8,y:0},{x:9,y:0},{x:10,y:0},{x:10,y:1},{x:10,y:2},{x:11,y:2},{x:12,y:2},{x:12,y:3},{x:12,y:4},{x:13,y:4},{x:14,y:4},{x:14,y:5},{x:14,y:6},{x:15,y:6},{x:16,y:6},{x:16,y:5},{x:16,y:4},{x:17,y:4},{x:18,y:4},{x:18,y:3},{x:18,y:2},{x:19,y:2},{x:20,y:2},{x:20,y:3},{x:20,y:4},{x:20,y:5},{x:20,y:6},{x:19,y:6},{x:18,y:6},{x:18,y:7},{x:18,y:8},{x:19,y:8},{x:20,y:8},{x:21,y:8},{x:22,y:8},{x:22,y:7},{x:22,y:6},{x:23,y:6},{x:24,y:6},{x:24,y:7},{x:24,y:8},{x:25,y:8},{x:26,y:8},{x:26,y:7},{x:26,y:6},{x:27,y:6},{x:28,y:6},{x:29,y:6} ]},
-  { level: 2, name: "Complex Path", path: [] },
-];
 
 function rasterizePath(pathPoints: {x:number, y:number}[]) {
     const path = [];
@@ -135,12 +131,29 @@ function rasterizePath(pathPoints: {x:number, y:number}[]) {
     return path;
 }
 
-const complexPathPoints = [
-    { x: 0, y: 2 }, { x: 5, y: 2 }, { x: 5, y: 15 }, { x: 12, y: 15 },
-    { x: 12, y: 4 }, { x: 20, y: 4 }, { x: 20, y: 12 }, { x: 15, y: 12 },
-    { x: 15, y: 17 }, { x: 25, y: 17 }, { x: 25, y: 8 }, { x: 29, y: 8 }
+const simpleZigZag = [
+    {x:0,y:2},{x:1,y:2},{x:2,y:2},{x:3,y:2},{x:4,y:2},{x:5,y:2},{x:6,y:2},{x:7,y:2},{x:7,y:3},{x:7,y:4},{x:6,y:4},{x:5,y:4},{x:4,y:4},{x:3,y:4},{x:2,y:4},{x:2,y:5},{x:2,y:6},{x:3,y:6},{x:4,y:6},{x:5,y:6},{x:6,y:6},{x:7,y:6},{x:8,y:6},{x:9,y:6},{x:10,y:6},{x:11,y:6},{x:12,y:6},{x:13,y:6},{x:14,y:6},{x:15,y:6},{x:16,y:6},{x:17,y:6},{x:18,y:6},{x:19,y:6},{x:20,y:6},{x:21,y:6},{x:22,y:6},{x:23,y:6},{x:24,y:6},{x:25,y:6},{x:26,y:6},{x:27,y:6},{x:28,y:6},{x:29,y:6}
 ];
-LEVELS[1].path = rasterizePath(complexPathPoints);
+
+const gauntletPoints = [
+    {x: 0, y: 9}, {x: 25, y: 9}, {x: 25, y: 10}, {x: 5, y: 10}, {x: 5, y: 11}, {x: 29, y: 11}
+];
+
+const serpentinePoints = [
+    {x: 0, y: 1}, {x: 28, y: 1}, {x: 28, y: 3}, {x: 1, y: 3}, {x: 1, y: 5}, {x: 28, y: 5}, {x: 28, y: 7}, {x: 1, y: 7}, {x: 1, y: 9}, {x: 28, y: 9}, {x: 28, y: 11}, {x: 1, y: 11}, {x: 1, y: 13}, {x: 28, y: 13}, {x: 28, y: 15}, {x: 1, y: 15}, {x: 1, y: 17}, {x: 29, y: 17}
+];
+
+const impossiblePoints = [
+    {x: 0, y: 9}, {x: 2, y: 9}, {x: 2, y: 2}, {x: 27, y: 2}, {x: 27, y: 17}, {x: 2, y: 17}, {x: 2, y: 10}, {x: 29, y: 10}
+];
+
+export const LEVELS: LevelData[] = [
+  { level: 1, name: "The Frontline", path: rasterizePath(simpleZigZag) },
+  { level: 2, name: "The Gauntlet", path: rasterizePath(gauntletPoints) },
+  { level: 3, name: "Serpentine", path: rasterizePath(serpentinePoints) },
+  { level: 4, name: "Winter's Bite (Impossible)", path: rasterizePath(impossiblePoints) },
+];
+
 
 export const ENEMIES_BY_WAVE: Record<number, EnemyId[]> = {
   1:  [...Array(5).fill('reindeer'), ...Array(5).fill('elf_warrior'), ...Array(15).fill('troop')],
@@ -162,10 +175,16 @@ export const ENEMIES_BY_WAVE: Record<number, EnemyId[]> = {
   17: [...Array(40).fill('tank'), ...Array(15).fill('heavy_tank'), ...Array(10).fill('jet')],
   18: [...Array(60).fill('tank'), ...Array(10).fill('heavy_tank')],
   19: [...Array(70).fill('humvee'), ...Array(15).fill('jet')],
-  20: [...Array(30).fill('tank'), ...Array(20).fill('heavy_tank'), ...Array(20).fill('angry_ snowman'), ...Array(2).fill('krampus'), ...Array(1).fill('boss')],
+  20: [...Array(30).fill('tank'), ...Array(20).fill('heavy_tank'), ...Array(20).fill('angry_snowman'), ...Array(2).fill('krampus'), ...Array(1).fill('boss')],
   21: [...Array(50).fill('troop'), ...Array(25).fill('jet')],
   22: [...Array(40).fill('humvee'), ...Array(25).fill('heavy_tank')],
   23: [...Array(80).fill('tank')],
   24: [...Array(50).fill('heavy_tank'), ...Array(20).fill('jet')],
   25: [...Array(2).fill('boss'), ...Array(4).fill('krampus'), ...Array(50).fill('heavy_tank')],
+  // Waves for Impossible Level
+  26: [...Array(100).fill('heavy_tank')],
+  27: [...Array(50).fill('heavy_tank'), ...Array(50).fill('jet')],
+  28: [...Array(20).fill('krampus'), ...Array(40).fill('heavy_tank')],
+  29: [...Array(10).fill('boss'), ...Array(50).fill('heavy_tank')],
+  30: [...Array(1).fill('mega_boss'), ...Array(5).fill('boss'), ...Array(10).fill('krampus')],
 };

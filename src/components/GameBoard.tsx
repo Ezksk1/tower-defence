@@ -315,27 +315,32 @@ export function drawRealisticEnemy(ctx: CanvasRenderingContext2D, e: ActiveEnemy
         ctx.fill();
         ctx.fillRect(-3 * scale, -5 * scale, 6 * scale, 1 * scale);
 
-    } else if (e.type === 'krampus' || e.type === 'boss') {
+    } else if (e.type === 'krampus' || e.type === 'boss' || e.type === 'mega_boss') {
         const isBoss = e.type === 'boss';
-        const w = (isBoss ? 24 : 20) * scale;
-        const h = (isBoss ? 40 : 35) * scale;
+        const isMega = e.type === 'mega_boss';
+        let s = scale;
+        if(isBoss) s *= 1.2;
+        if(isMega) s *= 1.5;
+
+        const w = (isBoss ? 24 : 20) * s;
+        const h = (isBoss ? 40 : 35) * s;
         // Body
-        ctx.fillStyle = isBoss ? '#880E4F' : '#5D4037';
+        ctx.fillStyle = isMega ? '#4A148C' : isBoss ? '#880E4F' : '#5D4037';
         ctx.fillRect(-w/2, -h/2, w, h);
         // Head
-        ctx.fillStyle = isBoss ? '#C2185B' :'#3E2723';
-        ctx.fillRect(-w/2 + 2*scale, -h/2, w-4*scale, 15*scale);
+        ctx.fillStyle = isMega ? '#6A1B9A' : isBoss ? '#C2185B' :'#3E2723';
+        ctx.fillRect(-w/2 + 2*s, -h/2, w-4*s, 15*s);
         // Horns
-        ctx.fillStyle = isBoss ? '#F8BBD0' : '#E0E0E0';
-        ctx.strokeStyle = isBoss ? '#AD1457' : '#9E9E9E';
-        ctx.lineWidth = 2 * scale;
+        ctx.fillStyle = isMega ? '#E1BEE7' : isBoss ? '#F8BBD0' : '#E0E0E0';
+        ctx.strokeStyle = isMega ? '#9C27B0' : isBoss ? '#AD1457' : '#9E9E9E';
+        ctx.lineWidth = 2 * s;
         ctx.beginPath();
-        ctx.moveTo(-8*scale, -18*scale); ctx.quadraticCurveTo(-15*scale, -25*scale, -12*scale, -30*scale); ctx.stroke();
-        ctx.moveTo(8*scale, -18*scale); ctx.quadraticCurveTo(15*scale, -25*scale, 12*scale, -30*scale); ctx.stroke();
+        ctx.moveTo(-8*s, -18*s); ctx.quadraticCurveTo(-15*s, -25*s, -12*s, -30*s); ctx.stroke();
+        ctx.moveTo(8*s, -18*s); ctx.quadraticCurveTo(15*s, -25*s, 12*s, -30*s); ctx.stroke();
         // Red eyes
-        ctx.fillStyle = 'red';
-        ctx.beginPath(); ctx.arc(-4*scale, -12*scale, 2*scale, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(4*scale, -12*scale, 2*scale, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = isMega ? '#FFEB3B' : 'red';
+        ctx.beginPath(); ctx.arc(-4*s, -12*s, 2*s, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(4*s, -12*s, 2*s, 0, Math.PI * 2); ctx.fill();
     } else if (e.type === 'jet') {
         const w = 40 * scale;
         const h = 16 * scale;
@@ -376,7 +381,9 @@ export function drawRealisticEnemy(ctx: CanvasRenderingContext2D, e: ActiveEnemy
     ctx.restore();
 
     // Draw hat on top of everything else for this enemy
-    drawChristmasHat(ctx, x, y, e.size.width * 0.4 * scale);
+    if (e.type !== 'mega_boss') {
+      drawChristmasHat(ctx, x, y, e.size.width * 0.4 * scale);
+    }
 
     const hpPct = e.currentHp / e.totalHp;
     ctx.fillStyle = 'rgba(0,0,0,0.5)';

@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { ENEMIES, TOWERS } from "@/lib/game-config";
+import { ENEMIES, TOWERS, LEVELS } from "@/lib/game-config";
 import type { GameState, TowerData, PlacedTower, EnemyData } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { drawRealisticTower, drawRealisticEnemy } from "@/components/GameBoard";
 import GameControls from "./GameControls";
 import { Button } from "./ui/button";
-import { ShieldQuestion, X } from "lucide-react";
+import { ShieldQuestion, X, Map } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +17,14 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "./ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "./ui/label";
 
 interface GameSidebarProps {
   gameState: GameState;
@@ -27,6 +35,7 @@ interface GameSidebarProps {
   onLoad: () => void;
   onRestart: () => void;
   onSpeedUp: () => void;
+  onLevelChange: (level: number) => void;
 }
 
 const EnemyPreview = ({ enemy }: { enemy: EnemyData }) => {
@@ -56,6 +65,7 @@ const EnemyPreview = ({ enemy }: { enemy: EnemyData }) => {
             frozenTimer: 0,
             poisonTimer: 0,
             poisonDamage: 0,
+            type: enemy.type
         };
         
         drawRealisticEnemy(ctx, activeEnemy);
@@ -145,7 +155,7 @@ const TowerPreview = ({ tower }: { tower: TowerData }) => {
 }
 
 
-export default function GameSidebar({ gameState, onDragStart, onStartWave, onPause, onSave, onLoad, onRestart, onSpeedUp }: GameSidebarProps) {
+export default function GameSidebar({ gameState, onDragStart, onStartWave, onPause, onSave, onLoad, onRestart, onSpeedUp, onLevelChange }: GameSidebarProps) {
   const [selectedTower, setSelectedTower] = useState<TowerData | null>(null);
 
   const handleTowerClick = (tower: TowerData) => {
@@ -220,8 +230,29 @@ export default function GameSidebar({ gameState, onDragStart, onStartWave, onPau
       <div className="mt-auto flex flex-col gap-2">
         <GameControls onPause={onPause} onSave={onSave} onLoad={onLoad} onRestart={onRestart} onSpeedUp={onSpeedUp} gameState={gameState} />
 
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2">
             <EnemyBestiary />
+            <div className="grid w-full items-center gap-1.5">
+              <Label htmlFor="level-select" className="flex items-center">
+                <Map className="mr-2 h-4 w-4" />
+                Select Map
+              </Label>
+              <Select
+                value={String(gameState.currentLevel)}
+                onValueChange={(value) => onLevelChange(Number(value))}
+              >
+                <SelectTrigger id="level-select">
+                  <SelectValue placeholder="Select a map" />
+                </SelectTrigger>
+                <SelectContent>
+                  {LEVELS.map((level) => (
+                    <SelectItem key={level.level} value={String(level.level)}>
+                      {level.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
         </div>
 
         <div id="stats">

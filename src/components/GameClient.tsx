@@ -108,7 +108,11 @@ export default function GameClient() {
     setGameState(prev => {
       if (prev.lives <= 0) return prev;
       
-      const waveConfig = ENEMIES_BY_WAVE[prev.wave] || [];
+      let waveNumber = prev.wave;
+      if(prev.currentLevel === 4) { // Impossible Level
+        waveNumber = prev.wave + 25;
+      }
+      const waveConfig = ENEMIES_BY_WAVE[waveNumber] || [];
       enemiesToSpawnRef.current = [...waveConfig];
 
       if(spawnIntervalRef.current) clearInterval(spawnIntervalRef.current);
@@ -231,14 +235,21 @@ export default function GameClient() {
       }
   };
   
-  const handleRestart = () => {
+  const handleRestart = (level?: number) => {
     if (spawnIntervalRef.current) clearInterval(spawnIntervalRef.current);
     enemiesToSpawnRef.current = [];
+    const newLevel = level !== undefined ? level : gameState.currentLevel;
+    const newPath = LEVELS[newLevel - 1].path;
     setGameState({
         ...initialGameState,
-        decorations: gameState.decorations, // Keep the same decorations
+        currentLevel: newLevel,
+        decorations: generateDecorations(30, newPath),
     });
-    toast({ title: 'Game Restarted!'});
+    toast({ title: `Game Restarted on ${LEVELS[newLevel - 1].name}!`});
+  };
+
+  const handleLevelChange = (level: number) => {
+    handleRestart(level);
   };
 
   const handleSpeedUp = () => {
@@ -246,8 +257,8 @@ export default function GameClient() {
     if (gameState.gameSpeed === 1) newSpeed = 2;
     else if (gameState.gameSpeed === 2) newSpeed = 4;
     else newSpeed = 1;
-    toast({ title: `Game speed set to ${newSpeed}x` });
     setGameState(prev => ({...prev, gameSpeed: newSpeed}));
+    toast({ title: `Game speed set to ${newSpeed}x` });
   };
 
   return (
@@ -266,8 +277,9 @@ export default function GameClient() {
         onPause={handlePause}
         onSave={handleSave}
         onLoad={handleLoad}
-        onRestart={handleRestart}
+        onRestart={() => handleRestart()}
         onSpeedUp={handleSpeedUp}
+        onLevelChange={handleLevelChange}
       />
     </div>
   );
