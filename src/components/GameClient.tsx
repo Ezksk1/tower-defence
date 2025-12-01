@@ -242,14 +242,12 @@ export default function GameClient() {
   };
 
   const handleSpeedUp = () => {
-      setGameState(prev => {
-          let newSpeed;
-          if (prev.gameSpeed === 1) newSpeed = 2;
-          else if (prev.gameSpeed === 2) newSpeed = 4;
-          else newSpeed = 1;
-          toast({ title: `Game speed set to ${newSpeed}x` });
-          return {...prev, gameSpeed: newSpeed};
-      });
+    let newSpeed;
+    if (gameState.gameSpeed === 1) newSpeed = 2;
+    else if (gameState.gameSpeed === 2) newSpeed = 4;
+    else newSpeed = 1;
+    toast({ title: `Game speed set to ${newSpeed}x` });
+    setGameState(prev => ({...prev, gameSpeed: newSpeed}));
   };
 
   return (
