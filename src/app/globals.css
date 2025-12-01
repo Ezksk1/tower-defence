@@ -222,7 +222,6 @@ h2 {
     background: #222;
     padding: 15px;
     border-radius: 6px;
-    margin-top: 20px;
 }
 
 .stat {
@@ -232,7 +231,8 @@ h2 {
 }
 
 #message-area {
-    margin-top: 15px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     text-align: center;
     color: #aaa;
     font-size: 0.9em;

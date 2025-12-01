@@ -2,7 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import type { GameState } from "@/lib/types";
-import { FolderDown, Loader2, Pause, Play, Save, Waves } from "lucide-react";
+import { FolderDown, Pause, Play, Save } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface GameControlsProps {
   onPause: () => void;
@@ -17,22 +23,43 @@ export default function GameControls({
   onLoad,
   gameState,
 }: GameControlsProps) {
-
   return (
-    <div className="flex gap-2 p-2 rounded-lg" style={{backgroundColor: '#2a2a2a', border: '2px solid #444'}}>
-      <Button onClick={onPause} variant="accent" size="sm">
-        {gameState.status === "paused" ? <Play /> : <Pause />}
-        {gameState.status === "paused" ? "Resume" : "Pause"}
-      </Button>
-      <Button onClick={onSave} variant="outline" size="sm">
-        <Save />
-        Save
-      </Button>
-      <Button onClick={onLoad} variant="outline" size="sm">
-        <FolderDown />
-        Load
-      </Button>
-      <div className="flex-grow" />
-    </div>
+    <TooltipProvider>
+      <div
+        className="flex justify-center gap-2 p-2 rounded-lg"
+        style={{ backgroundColor: "#2a2a2a", border: "2px solid #444" }}
+      >
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button onClick={onPause} variant="accent" size="icon">
+              {gameState.status === "paused" ? <Play /> : <Pause />}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{gameState.status === "paused" ? "Resume" : "Pause"} Game</p>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button onClick={onSave} variant="outline" size="icon">
+              <Save />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Save Game</p>
+          </TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button onClick={onLoad} variant="outline" size="icon">
+              <FolderDown />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Load Game</p>
+          </TooltipContent>
+        </Tooltip>
+      </div>
+    </TooltipProvider>
   );
 }

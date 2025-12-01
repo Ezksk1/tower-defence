@@ -7,6 +7,7 @@ import type { GameState, TowerData, PlacedTower } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { drawRealisticTower } from "@/components/GameBoard";
 import GameControls from "./GameControls";
+import { Button } from "./ui/button";
 
 interface GameSidebarProps {
   gameState: GameState;
@@ -121,24 +122,26 @@ export default function GameSidebar({ gameState, onDragStart, onStartWave, onPau
           );
         })}
       </div>
+      
+      <div className="mt-auto flex flex-col gap-2">
+        <GameControls onPause={onPause} onSave={onSave} onLoad={onLoad} gameState={gameState} />
 
-      <GameControls onPause={onPause} onSave={onSave} onLoad={onLoad} gameState={gameState} />
+        <div id="stats">
+          <div className="stat">Lives: <span id="lives">{gameState.lives}</span></div>
+          <div className="stat">Money: $<span id="money">{gameState.money}</span></div>
+          <div className="stat">Wave: <span id="wave">{gameState.wave}</span></div>
+        </div>
 
-      <div id="stats">
-        <div className="stat">Lives: <span id="lives">{gameState.lives}</span></div>
-        <div className="stat">Money: $<span id="money">{gameState.money}</span></div>
-        <div className="stat">Wave: <span id="wave">{gameState.wave}</span></div>
+        <div id="message-area">
+          {!gameState.waveActive && gameState.waveTimer > 0 ? (
+              `Next wave in: ${gameState.waveTimer}s`
+          ) : `Wave ${gameState.wave} in progress...`}
+        </div>
+
+        <Button onClick={onStartWave} disabled={gameState.waveActive || gameState.lives <= 0} className="w-full">
+          {gameState.lives <= 0 ? 'Game Over' : gameState.waveActive ? 'Wave in Progress' : 'Start Wave'}
+        </Button>
       </div>
-
-      <div id="message-area">
-        {!gameState.waveActive && gameState.waveTimer > 0 ? (
-            `Next wave in: ${gameState.waveTimer}s`
-        ) : `Wave ${gameState.wave} in progress...`}
-      </div>
-
-      <button onClick={onStartWave} disabled={gameState.waveActive} style={{marginTop: '10px'}}>
-        Start Wave
-      </button>
 
     </div>
   );
