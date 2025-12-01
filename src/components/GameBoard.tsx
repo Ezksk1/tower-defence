@@ -216,139 +216,152 @@ function drawChristmasHat(ctx: CanvasRenderingContext2D, x: number, y: number, s
 function drawRealisticEnemy(ctx: CanvasRenderingContext2D, e: ActiveEnemy) {
     const x = e.x;
     const y = e.y;
+    const scale = 1.2; // 20% bigger
 
     ctx.save();
     ctx.translate(x, y);
 
     if (e.type === 'tank' || e.type === 'heavy_tank') {
         const isHeavy = e.type === 'heavy_tank';
+        const w = 40 * scale;
+        const h = 32 * scale;
         ctx.fillStyle = 'rgba(0,0,0,0.5)';
-        ctx.fillRect(-20, -16, 40, 32);
+        ctx.fillRect(-w/2, -h/2, w, h);
         ctx.fillStyle = '#1b1b1b';
-        ctx.fillRect(-20, -16, 40, 8);
-        ctx.fillRect(-20, 8, 40, 8);
+        ctx.fillRect(-w/2, -h/2, w, h/4);
+        ctx.fillRect(-w/2, h/4, w, h/4);
         ctx.fillStyle = '#333';
-        for (let i = -18; i < 18; i += 6) {
-            ctx.fillRect(i, -16, 2, 8);
-            ctx.fillRect(i, 8, 2, 8);
+        for (let i = -w/2 + 2; i < w/2 -2; i += 6 * scale) {
+            ctx.fillRect(i, -h/2, 2 * scale, h/4);
+            ctx.fillRect(i, h/4, 2 * scale, h/4);
         }
         ctx.fillStyle = isHeavy ? '#2E7D32' : '#388E3C';
-        ctx.fillRect(-18, -10, 36, 20);
+        ctx.fillRect(-w/2 + 2, -h/2 + h/4, w - 4, h/2);
         ctx.fillStyle = isHeavy ? '#388E3C' : '#4CAF50';
         ctx.beginPath();
-        ctx.arc(0, 0, 10, 0, Math.PI * 2);
+        ctx.arc(0, 0, 10 * scale, 0, Math.PI * 2);
         ctx.fill();
         ctx.strokeStyle = '#1b5e20';
         ctx.lineWidth = 1;
         ctx.stroke();
         ctx.fillStyle = '#2E7D32';
-        ctx.fillRect(0, -3, isHeavy ? 28 : 22, isHeavy ? 8 : 6);
+        ctx.fillRect(0, -3 * scale, (isHeavy ? 28 : 22) * scale, (isHeavy ? 8 : 6) * scale);
         ctx.fillStyle = '#1b5e20';
         ctx.beginPath();
-        ctx.arc(0, 0, 4, 0, Math.PI * 2);
+        ctx.arc(0, 0, 4 * scale, 0, Math.PI * 2);
         ctx.fill();
     } else if (e.type === 'humvee') {
+        const w = 28 * scale;
+        const h = 16 * scale;
         ctx.fillStyle = 'rgba(0,0,0,0.4)';
         ctx.beginPath();
-        ctx.ellipse(0, 0, 16, 10, 0, 0, Math.PI * 2);
+        ctx.ellipse(0, 0, 16 * scale, 10 * scale, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.fillStyle = '#8D6E63';
-        ctx.fillRect(-14, -8, 28, 16);
+        ctx.fillRect(-w/2, -h/2, w, h);
         ctx.fillStyle = '#81D4FA';
-        ctx.fillRect(-6, -6, 12, 12);
+        ctx.fillRect(-w/2 + 8 * scale, -h/2 + 2*scale, 12 * scale, 12 * scale);
         ctx.fillStyle = '#212121';
-        ctx.fillRect(-14, -10, 6, 2);
-        ctx.fillRect(8, -10, 6, 2);
-        ctx.fillRect(-14, 8, 6, 2);
-        ctx.fillRect(8, 8, 6, 2);
+        ctx.fillRect(-14 * scale, -10 * scale, 6 * scale, 2 * scale);
+        ctx.fillRect(8 * scale, -10 * scale, 6 * scale, 2 * scale);
+        ctx.fillRect(-14 * scale, 8 * scale, 6 * scale, 2 * scale);
+        ctx.fillRect(8 * scale, 8 * scale, 6 * scale, 2 * scale);
     } else if (e.type === 'angry_snowman') {
         // Body
+        const r1 = 12 * scale;
+        const r2 = 8 * scale;
         ctx.fillStyle = '#fff';
         ctx.strokeStyle = '#eee';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.arc(0, 5, 12, 0, Math.PI * 2);
+        ctx.arc(0, 5 * scale, r1, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
         ctx.beginPath();
-        ctx.arc(0, -8, 8, 0, Math.PI * 2);
+        ctx.arc(0, -8 * scale, r2, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
 
         // Coal eyes and mouth
         ctx.fillStyle = '#000';
         ctx.beginPath();
-        ctx.arc(-3, -10, 1.5, 0, Math.PI * 2);
+        ctx.arc(-3 * scale, -10 * scale, 1.5 * scale, 0, Math.PI * 2);
         ctx.fill();
         ctx.beginPath();
-        ctx.arc(3, -10, 1.5, 0, Math.PI * 2);
+        ctx.arc(3 * scale, -10 * scale, 1.5 * scale, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillRect(-3, -5, 6, 1);
+        ctx.fillRect(-3 * scale, -5 * scale, 6 * scale, 1 * scale);
 
     } else if (e.type === 'krampus' || e.type === 'boss') {
         const isBoss = e.type === 'boss';
+        const w = (isBoss ? 24 : 20) * scale;
+        const h = (isBoss ? 40 : 35) * scale;
         // Body
         ctx.fillStyle = isBoss ? '#880E4F' : '#5D4037';
-        ctx.fillRect(-12, -20, 24, 40);
+        ctx.fillRect(-w/2, -h/2, w, h);
         // Head
         ctx.fillStyle = isBoss ? '#C2185B' :'#3E2723';
-        ctx.fillRect(-10, -18, 20, 15);
+        ctx.fillRect(-w/2 + 2*scale, -h/2, w-4*scale, 15*scale);
         // Horns
         ctx.fillStyle = isBoss ? '#F8BBD0' : '#E0E0E0';
         ctx.strokeStyle = isBoss ? '#AD1457' : '#9E9E9E';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2 * scale;
         ctx.beginPath();
-        ctx.moveTo(-8, -18); ctx.quadraticCurveTo(-15, -25, -12, -30); ctx.stroke();
-        ctx.moveTo(8, -18); ctx.quadraticCurveTo(15, -25, 12, -30); ctx.stroke();
+        ctx.moveTo(-8*scale, -18*scale); ctx.quadraticCurveTo(-15*scale, -25*scale, -12*scale, -30*scale); ctx.stroke();
+        ctx.moveTo(8*scale, -18*scale); ctx.quadraticCurveTo(15*scale, -25*scale, 12*scale, -30*scale); ctx.stroke();
         // Red eyes
         ctx.fillStyle = 'red';
-        ctx.beginPath(); ctx.arc(-4, -12, 2, 0, Math.PI * 2); ctx.fill();
-        ctx.beginPath(); ctx.arc(4, -12, 2, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(-4*scale, -12*scale, 2*scale, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(4*scale, -12*scale, 2*scale, 0, Math.PI * 2); ctx.fill();
     } else if (e.type === 'jet') {
+        const w = 40 * scale;
+        const h = 16 * scale;
         ctx.fillStyle = '#37474F';
         ctx.beginPath();
-        ctx.moveTo(-20, 0);
-        ctx.lineTo(10, -8);
-        ctx.lineTo(20, 0);
-        ctx.lineTo(10, 8);
+        ctx.moveTo(-w/2, 0);
+        ctx.lineTo(w/4, -h/2);
+        ctx.lineTo(w/2, 0);
+        ctx.lineTo(w/4, h/2);
         ctx.closePath();
         ctx.fill();
 
         ctx.fillStyle = '#B0BEC5';
-        ctx.fillRect(-10, -3, 20, 6);
+        ctx.fillRect(-w/4, -h/4, w/2, h/2);
 
         ctx.fillStyle = '#1976D2';
-        ctx.fillRect(10, -2, 5, 4);
+        ctx.fillRect(w/4, -h/8, w/8, h/4);
 
     } else { // Troop, elf, toy soldier
+        const w = 12 * scale;
+        const h = 7 * scale;
         ctx.fillStyle = 'rgba(0,0,0,0.3)';
         ctx.beginPath();
-        ctx.arc(0, 0, 8, 0, Math.PI * 2);
+        ctx.arc(0, 0, 8*scale, 0, Math.PI * 2);
         ctx.fill();
         ctx.fillStyle = e.color;
         ctx.beginPath();
-        ctx.ellipse(0, 0, 10, 5, 0, 0, Math.PI * 2);
+        ctx.ellipse(0, 0, w, h, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.fillStyle = lightenColor(e.color, -20);
         ctx.beginPath();
-        ctx.arc(0, 0, 5, 0, Math.PI * 2);
+        ctx.arc(0, 0, 5 * scale, 0, Math.PI * 2);
         ctx.fill();
         ctx.fillStyle = '#000';
-        ctx.fillRect(2, -4, 8, 2);
+        ctx.fillRect(2*scale, -4*scale, 8*scale, 2*scale);
     }
 
     ctx.restore();
 
     // Draw hat on top of everything else for this enemy
-    drawChristmasHat(ctx, x, y, e.size.width * 0.4);
+    drawChristmasHat(ctx, x, y, e.size.width * 0.4 * scale);
 
     const hpPct = e.currentHp / e.totalHp;
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
-    ctx.fillRect(e.x - 12, e.y - 24, 24, 6);
+    ctx.fillRect(e.x - 12 * scale, e.y - 24 * scale, 24 * scale, 6 * scale);
     ctx.fillStyle = '#f44336';
-    ctx.fillRect(e.x - 11, e.y - 23, 22, 4);
+    ctx.fillRect(e.x - 11 * scale, e.y - 23 * scale, 22 * scale, 4 * scale);
     ctx.fillStyle = '#00E676';
-    ctx.fillRect(e.x - 11, e.y - 23, 22 * hpPct, 4);
+    ctx.fillRect(e.x - 11 * scale, e.y - 23 * scale, 22 * scale * hpPct, 4 * scale);
 }
 
 
