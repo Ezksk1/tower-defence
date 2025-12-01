@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -37,6 +38,7 @@ interface GameSidebarProps {
   onSpeedUp: () => void;
   onLevelChange: (level: number) => void;
   onDrawPath: () => void;
+  isDrawingPath: boolean;
 }
 
 const EnemyPreview = ({ enemy }: { enemy: EnemyData }) => {
@@ -156,7 +158,7 @@ const TowerPreview = ({ tower }: { tower: TowerData }) => {
 }
 
 
-export default function GameSidebar({ gameState, onDragStart, onStartWave, onPause, onSave, onLoad, onRestart, onSpeedUp, onLevelChange, onDrawPath }: GameSidebarProps) {
+export default function GameSidebar({ gameState, onDragStart, onStartWave, onPause, onSave, onLoad, onRestart, onSpeedUp, onLevelChange, onDrawPath, isDrawingPath }: GameSidebarProps) {
   const [selectedTower, setSelectedTower] = useState<TowerData | null>(null);
 
   const handleTowerClick = (tower: TowerData) => {
@@ -234,9 +236,9 @@ export default function GameSidebar({ gameState, onDragStart, onStartWave, onPau
         <div className="flex flex-col gap-2">
             <EnemyBestiary />
              {gameState.currentLevel === 5 && (
-              <Button onClick={onDrawPath} variant="outline">
+              <Button onClick={onDrawPath} variant={isDrawingPath ? "secondary" : "outline"}>
                 <Pencil className="mr-2 h-4 w-4" />
-                Draw New Path
+                {isDrawingPath ? "Finish Path" : "Draw Path"}
               </Button>
             )}
             <div className="grid w-full items-center gap-1.5">
@@ -274,10 +276,12 @@ export default function GameSidebar({ gameState, onDragStart, onStartWave, onPau
               `Next wave in: ${gameState.waveTimer}s`
           ) : gameState.lives <= 0 ? (
               'Game Over'
+          ) : isDrawingPath ? (
+              'Click to draw your path...'
           ) : `Wave ${gameState.wave} in progress...`}
         </div>
 
-        <Button onClick={onStartWave} disabled={gameState.waveActive || gameState.lives <= 0} className="w-full">
+        <Button onClick={onStartWave} disabled={gameState.waveActive || gameState.lives <= 0 || isDrawingPath} className="w-full">
           {gameState.lives <= 0 ? 'Game Over' : gameState.waveActive ? 'Wave in Progress' : 'Start Wave'}
         </Button>
       </div>
@@ -285,3 +289,5 @@ export default function GameSidebar({ gameState, onDragStart, onStartWave, onPau
     </div>
   );
 }
+
+    

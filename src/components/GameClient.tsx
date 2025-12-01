@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
@@ -88,6 +89,8 @@ export default function GameClient() {
                 currentPath = LEVELS[levelIndex].path;
             }
         }
+
+        if (!currentPath) return prev;
 
         const newEnemies = enemiesForThisSpawn.map((enemyId, index) => {
             const enemyData = ENEMIES[enemyId];
@@ -228,12 +231,7 @@ export default function GameClient() {
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isDrawingPath) return;
-    setIsDrawingPath(true); // Redundant but safe
-    setCustomPathPoints([]); // Start new path
-  };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!isDrawingPath) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
@@ -251,14 +249,28 @@ export default function GameClient() {
     });
   };
 
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    // No longer used for drawing path
+  };
+
   const handleMouseUp = () => {
+    // No longer used for drawing path
+  };
+
+  const toggleDrawingPath = () => {
     if (isDrawingPath) {
+      // If we are currently drawing, stop and save.
       setIsDrawingPath(false);
       if (customPathPoints.length > 1) {
         toast({ title: 'Path Saved!', description: 'Your custom path is ready for the next wave.' });
-      } else {
-        toast({ variant: "destructive", title: 'Path Too Short', description: 'Draw a longer path.' });
+      } else if (customPathPoints.length > 0) {
+        toast({ variant: "destructive", title: 'Path Too Short', description: 'Add at least one more point.' });
       }
+    } else {
+      // If we are not drawing, start.
+      setIsDrawingPath(true);
+      setCustomPathPoints([]); // Clear old path
+      toast({ title: 'Drawing Path', description: 'Click on the map to add points to the path. Click the button again to finish.' });
     }
   };
 
@@ -314,9 +326,11 @@ export default function GameClient() {
     let newPath;
     if(newLevel === 5) {
       newPath = [];
+      setIsDrawingPath(true);
       setCustomPathPoints([]);
-      toast({ title: 'Draw Your Path!', description: "Click and drag on the map to create a path for the enemies."});
+      toast({ title: 'Draw Your Path!', description: "Click on the map to create a path for the enemies. Click the 'Draw Path' button again when done."});
     } else {
+      setIsDrawingPath(false);
       const levelIndex = newLevel - 1;
       if(LEVELS[levelIndex]) {
         newPath = LEVELS[levelIndex].path;
@@ -337,12 +351,14 @@ export default function GameClient() {
 
   const handleSpeedUp = () => {
     let newSpeed;
-    if (gameState.gameSpeed === 1) newSpeed = 2;
-    else if (gameState.gameSpeed === 2) newSpeed = 4;
-    else newSpeed = 1;
-
-    setGameState(prev => ({...prev, gameSpeed: newSpeed}));
-    toast({ title: `Game speed set to ${newSpeed}x` });
+    setGameState(prev => {
+      if (prev.gameSpeed === 1) newSpeed = 2;
+      else if (prev.gameSpeed === 2) newSpeed = 4;
+      else newSpeed = 1;
+      
+      toast({ title: `Game speed set to ${newSpeed}x` });
+      return {...prev, gameSpeed: newSpeed};
+    });
   };
 
   return (
@@ -368,7 +384,8 @@ export default function GameClient() {
         onRestart={() => handleRestart()}
         onSpeedUp={handleSpeedUp}
         onLevelChange={handleLevelChange}
-        onDrawPath={() => setIsDrawingPath(true)}
+        onDrawPath={toggleDrawingPath}
+        isDrawingPath={isDrawingPath}
       />
     </div>
   );
